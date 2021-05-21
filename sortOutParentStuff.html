@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <script> src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Find Parent</title>
+
+
+</head>
+<body onload = "setUpPage()">
+<ol>
+
+<li id = "l1"> <p><b>test line of list</b></p></li>
+  <div id ="test">test result</div>
+
+
+
+</ol>
+
+<script>
+
+function setUpPage(){
+let l = document.getElementById("l1");
+l.addEventListener('click',listClick);
+}
+
+function listClick(e){
+let clickedEl =e.target;
+let ih = clickedEl.innerHTML
+alert(ih);
+  let tr = document.getElementById("test");
+let iih = this.innerHTML;
+tr.innerHTML = iih;
+
+
+}
+
+
+
+</script>
+
+</body>
+</html>

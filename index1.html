@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<style>
+* {
+  box-sizing: border-box;
+    padding:0px;
+    border:0px;
+    margin:0px;
+    list-style-position: inside;
+    list-style-type:none
+}
+
+#outer {
+        background-color:rgb(253,253,253) ;
+        position:absolute;
+        top:250px;
+        width:400px;
+        height:400px;
+        left:10px;
+      }
+#buttonbar{
+    background-color:rgb(240,240,240) ;
+        position:absolute;
+        top:220px;
+        width:180px;
+        height:30px;
+        left:10px;
+    fonts-size:18;
+    size:18;
+
+
+}
+
+
+
+
+</style>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
+
+</head>
+
+
+
+
+<body onload = "setUpPage()">
+
+
+<!--
+<textarea id="ta1"  onkeyup="isReturn(ev)" placeholder="enter text here"></textarea>
+-->
+
+
+
+
+
+
+
+<div id = "tt">
+
+ <ol id = "tl" reversed>
+
+
+    </ol>
+
+</div>
+
+
+<div id="test">test div</div>
+
+
+
+<div id = "buttonbar">
+    <button id="but1" style="width:50px" onclick="doBut1()"> ⬅︎ ⬆︎︎ </button>
+    <button id="but2" style="width:50px" onclick="doBut2()"> ⬇︎ </button>
+</div>div>
+
+<div id="outer">
+    <div id="summernote"></div>
+</div>
+
+<!--
+<div id="summernote">Hello Summernote</div>
+-->
+<!--
+<script src="/socket.io/socket.io.js"></script>
+
+
+
+
+<script>
+    var socket = io();
+    var form = document.getElementById('form');
+    var input = document.getElementById('input');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (input.value) {
+            socket.emit('chat message', input.value);
+            input.value = '';
+        }
+    });
+
+    socket.on('chat message', function(msg) {
+        var item = document.createElement('li');
+        item.textContent = msg;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+
+
+//test change
+
+
+</script>
+-->
+</body>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io();
+
+/*
+    socket.on('chat message', function(msg) {
+        var item = document.createElement('li');
+        item.textContent = msg;
+        messages.appendChild(item);
+        //window.scrollTo(0, document.body.scrollHeight);
+
+
+    });
+
+ */
+
+socket.on('chat message', function(msg) {
+
+        let tl = document.getElementById("tl");
+
+     let items = tl.getElementsByTagName("li");
+     let lenList = items.length;
+     let newIDNumber = lenList +1;
+     let newID = "listItemID"+ newIDNumber;
+
+
+     let aListEl = document.createElement('li');
+     aListEl.id = newID;
+
+     aListEl.innerHTML = msg;
+
+
+      aListEl.addEventListener('click',listClick);
+     tl.insertBefore(aListEl,tl.childNodes[0]);
+
+
+    // let htmlIdPhrase = "<li id=" +newID +">";
+
+
+
+    //let myString = msg;
+    //ta3.value = ta3.value + myString;
+   // tt.innerHTML =  myString + "<br>" + tt.innerHTML;
+
+   // tl.innerHTML = htmlIdPhrase + myString +"</li>" + tl.innerHTML;
+
+     //tl.innerHTML = htmlIdPhrase + "</li>" + "<br>" + tl.innerHTML;
+
+    // tl.innerText =  myString  + tl.innerText;
+
+});
+</script>
+
+<script>
+window.user1 = "user1";
+
+
+
+function listClick(e){
+
+    var clickedID = this.id;
+    window.selectedListId = clickedID;
+    document.getElementById("test").innerHTML = this.innerHTML;
+
+}
+
+function setStyle(elementId,left,width,top,height,bkColor){
+    let el = document.getElementById(elementId);
+    el.style.fontFamily = "Arial, Helvetica, sans-serif";
+    el.style.position = "absolute";
+    el.style.left = left; el.style.width =width;
+    el.style.top = top ; el.style.height = height;
+    //el.innerText = "cat"
+
+
+   el.style.backgroundColor = bkColor;
+}//end setStyle
+
+function setUpPage(){
+
+
+    setStyle("test","205px","200px","1px","200px","MediumSeaGreen");
+
+    setStyle("tt","1px","200px","1px","200px","lightblue");
+    document.getElementById("tt").style.overflow = "scroll";
+
+    setStyle("tl","1px","200px","1px","199px","lightblue");
+    document.getElementById("tl").style.overflow = "scroll";
+
+    //let ta1 = document.getElementById("ta1");
+    //ta1.addEventListener('keyup',logKey1);
+
+   $('#summernote').summernote({
+       placeholder: 'Hello stand alone ui',
+        height:300
+      });
+
+
+
+
+
+
+
+
+
+}
+
+function logKey1(e){
+
+   //var ta1 = document.getElementById("ta1");
+
+    if(e.keyCode === 13) {serviceReturnOn1()}
+}
+
+
+
+function serviceReturnOn1(){
+//****currently bypassed by return on next line ***
+    return;
+
+   // let ta1 = document.getElementById("ta1");
+    //let tl = document.getElementById("tl");
+   // let items = tl.getElementsByTagName("li");
+   // let lenList = items.length;
+    //let newIDNumber = lenList +1;
+   // let newID = "listItemID"+ newIDNumber;
+   // let htmlIdPhrase = "<li id=" +newID +">";
+   // let myString = ta1.value; ta1.value = "";
+    //tl.innerHTML = htmlIdPhrase + myString +"</li>" + tl.innerHTML;
+
+    //socket.emit('chat message',myString );
+}
+
+function doBut1(){
+
+ //let ta1 = document.getElementById("ta1");
+    //let tl = document.getElementById("tl");
+   // let items = tl.getElementsByTagName("li");
+   // let lenList = items.length;
+    //let newIDNumber = lenList +1;
+   // let newID = "listItemID"+ newIDNumber;
+   // let htmlIdPhrase = "<li id=" +newID +">";
+
+
+    //let myString = ta1.value; ta1.value = "";
+
+    let myString = $('#summernote').summernote('code');
+
+    //tl.innerHTML = htmlIdPhrase + myString +"</li>" + tl.innerHTML;
+
+    socket.emit('chat message',myString );
+
+
+
+
+/* DEVEL RELICS BUT MAYBE USEFUL SNIPPETS
+   ta2 = document.getElementById("ta2");
+//ta2.value = "OOOOO";
+    let ta3 = document.getElementById("ta3");
+let myString = ta2.value;
+ ta3.value = ta3.value + myString;
+//alert("test");
+    let tl = document.getElementById("tl");
+    let l1 = document.getElementById("listItemID2");
+    //l1.style.listStyleType = "circle";
+    l1.style.backgroundColor = "grey";
+    l1.style.color ="darkslategrey";
+ l1.style.fontFamily = "Arial, Helvetica, sans-serif";
+    //l1.style.textShadow = "2px 0px #000000";
+    //tl.style.listStylePosition = "inside";
+    //tl.style.backgroundColor = "red";
+*/
+
+
+
+
+
+    }
+
+    function doBut2(){
+
+let elLiEl = document.getElementById(window.selectedListId);
+let tempString = elLiEl.innerHTML;
+
+    $('#summernote').summernote('code',tempString) ;
+
+    }
+
+
+
+
+</script>
+
+</html>
