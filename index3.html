@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<style>
+* {
+  box-sizing: border-box;
+    padding:0px;
+
+    margin:0px;
+    list-style-position: inside;
+ list-style-type:none
+
+}
+
+#outer {
+        background-color:rgb(253,253,253) ;
+        position:absolute;
+        top:250px;
+        width:400px;
+        height:400px;
+        left:10px;
+      }
+#buttonbar{
+    background-color:rgb(240,240,240) ;
+        position:absolute;
+        top:220px;
+        width:300px;
+        height:30px;
+        left:10px;
+    fonts-size:18;
+    size:18
+}
+#privateListContainerID {
+
+    padding:4px;
+}
+ol {
+padding:5px;
+
+}
+
+li {
+    border:2px;
+    border-style:solid;
+    border:rgb(0,0,0)
+}
+
+
+
+</style>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
+
+</head>
+
+
+
+
+<body onload = "setUpPage()">
+
+
+<!--
+<textarea id="ta1"  onkeyup="isReturn(ev)" placeholder="enter text here"></textarea>
+-->
+
+
+
+
+
+
+
+<div id = "privateListContainerID">
+    <ol id = "privateListID" reversed>
+    </ol>
+</div>
+
+
+<div id="test">test div</div>
+
+
+
+<div id = "buttonbar">
+    <button id="but1" style="width:50px" onclick="doBut1()"> ⬅︎ ⬆︎︎ </button>
+    <button id="but2" style="width:50px" onclick="doBut2()"> ⬇︎ </button>
+     <button id="oldDefaultName" style="width:50px" onclick="doBut5()">Set To User1</button>
+    <button id="chooseNameBut" style="width:50px" onclick="doBut3()">Set To User2</button>
+    <button id="otherNameBut" style="width:50px" onclick="doBut4()">Set To User3</button>
+
+</div>
+
+<div id="outer">
+    <div id="summernote"></div>
+</div>
+
+
+
+</body>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+    var socket = io();
+
+    socket.on('chat message', function(msg) {
+
+        let privateListID = document.getElementById("privateListID");
+
+        let items = privateListID.getElementsByTagName("li");
+        let lenList = items.length;
+        let newIDNumber = lenList +1;
+        let newID = "listItemID"+ newIDNumber;
+
+        if(window.selectedListId){
+            let oldListEl = document.getElementById(window.selectedListId);
+            oldListEl.style.borderStyle = "dotted";
+        oldListEl.style.borderColor = "rgb(196,196,196)";
+         oldListEl.style.borderWidth = "1px";
+
+        }
+
+
+        let aListEl = document.createElement('li');
+        aListEl.id = newID;
+        window.selectedListId = newID;
+        aListEl.style.borderStyle = "solid";
+        aListEl.style.borderColor = "rgb(190,190,190)";
+        aListEl.style.borderWidth = "2px";
+
+
+        if (msg.user == "buddy"){
+            aListEl.style.backgroundColor = "rgb(220,220,255)"
+        } else {
+             aListEl.style.backgroundColor = "rgb(240,240,240)"
+
+        }
+
+        aListEl.innerHTML = msg.message;
+
+
+        aListEl.addEventListener('dblclick',listClick);
+        privateListID.insertBefore(aListEl,privateListID.childNodes[0]);
+    });
+/*
+    var socket2 = io();
+
+    socket2.on('chat message', function(msg) {
+
+        let privateListID = document.getElementById("privateListID");
+
+        let items = privateListID.getElementsByTagName("li");
+        let lenList = items.length;
+        let newIDNumber = lenList +1;
+        let newID = "listItemID"+ newIDNumber;
+
+
+        let aListEl = document.createElement('li');
+        aListEl.id = newID;
+
+        aListEl.innerHTML = msg;
+
+
+        aListEl.addEventListener('click',listClick);
+        privateListID.insertBefore(aListEl,privateListID.childNodes[0]);
+    });
+
+*/
+
+
+
+
+
+</script>
+
+<script>
+window.user = "user1";
+show("user1 set");
+
+
+
+function listClick(e){
+
+    var clickedID = this.id;
+
+if(window.selectedListId){
+            let oldListEl = document.getElementById(window.selectedListId);
+            oldListEl.style.borderStyle = "dotted";
+        oldListEl.style.borderColor = "rgb(196,196,196)";
+         oldListEl.style.borderWidth = "1px";
+
+        }
+
+
+let newSelectedEl =document.getElementById(clickedID );
+
+ newSelectedEl.style.borderStyle = "solid";
+        newSelectedEl.style.borderColor = "rgb(190,190,190)";
+        newSelectedEl.style.borderWidth = "2px";
+
+
+
+    window.selectedListId = clickedID;
+
+    doBut2();
+
+
+
+
+    //let testHTML = document.getElementById("test").innerHTML;
+  // testHTML = this.innerHTML;
+   //testHTML = testHTML + "<br" + socket.id;
+document.getElementById("test").innerHTML = this.innerHTML;
+let testStuff = document.getElementById("test").innerHTML;
+document.getElementById("test").innerHTML = testStuff + "<br>" +socket.id;
+
+
+//document.getElementById("test").innerHTML = document.getElementById("test").innerHTML + "<br>" +socket2.id;
+
+//document.getElementById("test").innerHTML =  + "<br>" +socket2.id;
+
+}
+
+function setStyle(elementId,left,width,top,height,bkColor){
+    let el = document.getElementById(elementId);
+    el.style.fontFamily = "Arial, Helvetica, sans-serif";
+    el.style.position = "absolute";
+    el.style.left = left; el.style.width =width;
+    el.style.top = top ; el.style.height = height;
+    //el.innerText = "cat"
+
+
+   el.style.backgroundColor = bkColor;
+}//end setStyle
+
+function setUpPage(){
+
+    window.selectedListId = null;
+
+    setStyle("test","205px","200px","1px","200px","MediumSeaGreen");
+
+    setStyle("privateListContainerID","1px","200px","1px","200px","rgb(240,240,240)");
+    document.getElementById("privateListContainerID").style.overflow = "scroll";
+
+    setStyle("privateListID","1px","200px","1px","199px","rgb(240,240,240");
+    document.getElementById("privateListID").style.overflow = "scroll";
+
+    //let ta1 = document.getElementById("ta1");
+    //ta1.addEventListener('keyup',logKey1);
+
+   $('#summernote').summernote({
+       placeholder: 'Hello stand alone ui',
+        height:300
+      });
+
+
+
+
+
+
+
+
+
+}
+
+function logKey1(e){
+
+   //var ta1 = document.getElementById("ta1");
+
+    if(e.keyCode === 13) {serviceReturnOn1()}
+}
+
+
+
+function serviceReturnOn1(){
+//****currently bypassed by return on next line ***
+    return;
+
+   // let ta1 = document.getElementById("ta1");
+    //let privateListID = document.getElementById("privateListID");
+   // let items = privateListID.getElementsByTagName("li");
+   // let lenList = items.length;
+    //let newIDNumber = lenList +1;
+   // let newID = "listItemID"+ newIDNumber;
+   // let htmlIdPhrase = "<li id=" +newID +">";
+   // let myString = ta1.value; ta1.value = "";
+    //privateListID.innerHTML = htmlIdPhrase + myString +"</li>" + privateListID.innerHTML;
+
+    //socket.emit('chat message',myString );
+}
+
+function doBut1(){
+
+ //let ta1 = document.getElementById("ta1");
+    //let privateListID = document.getElementById("privateListID");
+   // let items = privateListID.getElementsByTagName("li");
+   // let lenList = items.length;
+    //let newIDNumber = lenList +1;
+   // let newID = "listItemID"+ newIDNumber;
+   // let htmlIdPhrase = "<li id=" +newID +">";
+
+
+    //let myString = ta1.value; ta1.value = "";
+
+    let myString = $('#summernote').summernote('code');
+
+    //privateListID.innerHTML = htmlIdPhrase + myString +"</li>" + privateListID.innerHTML;
+
+    socket.emit('chat message',myString );
+
+
+
+
+/* DEVEL RELICS BUT MAYBE USEFUL SNIPPETS
+   ta2 = document.getElementById("ta2");
+//ta2.value = "OOOOO";
+    let ta3 = document.getElementById("ta3");
+let myString = ta2.value;
+ ta3.value = ta3.value + myString;
+//alert("test");
+    let privateListID = document.getElementById("privateListID");
+    let l1 = document.getElementById("listItemID2");
+    //l1.style.listStyleType = "circle";
+    l1.style.backgroundColor = "grey";
+    l1.style.color ="darkslategrey";
+ l1.style.fontFamily = "Arial, Helvetica, sans-serif";
+    //l1.style.textShadow = "2px 0px #000000";
+    //privateListID.style.listStylePosition = "inside";
+    //privateListID.style.backgroundColor = "red";
+*/
+
+
+
+
+
+    }
+
+    function doBut2(){
+
+let elLiEl = document.getElementById(window.selectedListId);
+let tempString = elLiEl.innerHTML;
+
+    $('#summernote').summernote('code',tempString) ;
+
+    }
+
+function doBut3(){
+
+window.user = "user2"
+    show("user2 set");
+    let socketID = socket.id;
+    let user = "user2"
+    let userData = {socketID:socketID, user:user}
+    socket.emit('client data',userData );
+
+
+}
+
+function doBut4(){
+
+window.user = "user3";
+    show("user3 set");
+    let socketID = socket.id;
+    let user = "user3"
+    let userData = {socketID:socketID, user:user}
+    socket.emit('client data',userData );
+
+}
+
+function doBut5(){
+
+window.user = "user1";
+    show("user1 set");
+    let socketID = socket.id;
+    let user = "user1"
+    let userData = {socketID:socketID, user:user}
+    socket.emit('client data',userData );
+
+}
+
+function show(aString){
+document.getElementById("test").innerHTML = aString +"<br>";
+}
+
+
+</script>
+
+</html>
