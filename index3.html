@@ -12,7 +12,7 @@
     list-style-position: inside;
  list-style-type:none
 }
-
+/*
 #outer {
         background-color:rgb(253,253,253) ;
         position:absolute;
@@ -21,6 +21,9 @@
         height:400px;
         left:10px;
       }
+
+ */
+
 #buttonbar{
     background-color:rgb(240,240,240) ;
         position:absolute;
@@ -32,10 +35,11 @@
     size:18
 }
 #privateListContainerID {
-    padding:4px;
+    padding:1px;
 }
+
 ol {
-padding:5px;
+padding:1px;
 }
 
 li {
@@ -82,12 +86,17 @@ li {
     <div id="summernote"></div>
 </div>
 
-
 </body>
-
+<!-- --------------------------------------------------------------------------------------------------------------- -->
 
 
 <script>
+
+    var socket = io();
+    window.user = "user1";
+    show("user1 set");
+
+
     function setUpPage(){
 
     window.selectedListId = null;
@@ -95,72 +104,67 @@ li {
     setStyle("test","1px","400px","700px","100px","MediumSeaGreen");
 
     setStyle("privateListContainerID","1px","400px","1px","200px","rgb(240,240,240)");
-    document.getElementById("privateListContainerID").style.overflow = "scroll";
+    //gEl("privateListContainerID").style.overflow = "scroll";
 
     setStyle("privateListID","1px","400px","1px","199px","rgb(240,240,240");
-    document.getElementById("privateListID").style.overflow = "scroll";
 
-    //let ta1 = document.getElementById("ta1");
-    //ta1.addEventListener('keyup',logKey1);
+    setStyle("outer","10px","400px","250px","322px","rgb(240,240,240");
 
-   $('#summernote').summernote({
-       placeholder: 'Hello stand alone ui',
-        height:300
-      });
+   gEl("privateListID").style.overflow = "scroll";
 
-}//end setUpPage ------------------------------------------------------------------------------------------------------
+    $('#summernote').summernote({
+            placeholder: 'Hello stand alone ui',
+            height:200,
+            callbacks: {
+
+                onKeydown: function (e) {
+                    logKey1(e)
+                }
+            }
+        });
+    }//end setUpPage ------------------------------------------------------------------------------------------------------
+
+    function logKey1(e){  if(e.keyCode === 13  &&  e.shiftKey ) {doCopyOut()}  }
 
 
-
-
-
-
-    var socket = io();
 
     socket.on('chat message', function(msg) {
 
-        let privateListID = document.getElementById("privateListID");
-
-        let items = privateListID.getElementsByTagName("li");
+        let privateList = gEl("privateListID");
+        let items = privateList.getElementsByTagName("li");
         let lenList = items.length;
         let newIDNumber = lenList +1;
         let newID = "listItemID"+ newIDNumber;
 
         if(window.selectedListId){
-            let oldListEl = document.getElementById(window.selectedListId);
+            let oldListEl = gEl(window.selectedListId);
             oldListEl.style.borderStyle = "dotted";
-        oldListEl.style.borderColor = "rgb(196,196,196)";
-         oldListEl.style.borderWidth = "1px";
+            oldListEl.style.borderColor = "rgb(196,196,196)";
+            oldListEl.style.borderWidth = "1px";
         }
-
+         window.selectedListId = newID;
 
         let aListEl = document.createElement('li');
         aListEl.id = newID;
-        window.selectedListId = newID;
         aListEl.style.borderStyle = "solid";
         aListEl.style.borderColor = "rgb(190,190,190)";
-        aListEl.style.borderWidth = "2px";
+        aListEl.style.borderWidth = "3px";
 
 
         if (msg.user == "buddy"){
-            aListEl.style.backgroundColor = "rgb(220,255,220)"
+            aListEl.style.backgroundColor = "rgb(255,200,200)"
         } else {
-             aListEl.style.backgroundColor = "rgb(240,240,240)"
-
+             aListEl.style.backgroundColor = "rgb(220,255,220)"
         }
 
         aListEl.innerHTML = msg.message;
-
-
         aListEl.addEventListener('dblclick',listClick);
-        privateListID.insertBefore(aListEl,privateListID.childNodes[0]);
+        privateList.insertBefore(aListEl,privateList.childNodes[0]);
     });
 
-</script>
 
-<script>
-window.user = "user1";
-show("user1 set");
+
+
 
 
 
@@ -169,25 +173,18 @@ function listClick(e){
     var clickedID = this.id;
 
 if(window.selectedListId){
-            let oldListEl = document.getElementById(window.selectedListId);
+            let oldListEl = gEl(window.selectedListId);
             oldListEl.style.borderStyle = "dotted";
-        oldListEl.style.borderColor = "rgb(196,196,196)";
-         oldListEl.style.borderWidth = "1px";
+            oldListEl.style.borderColor = "rgb(196,196,196)";
+            oldListEl.style.borderWidth = "1px";
+}
 
-        }
-
-
-let newSelectedEl =document.getElementById(clickedID );
-
- newSelectedEl.style.borderStyle = "solid";
-        newSelectedEl.style.borderColor = "rgb(190,190,190)";
-        newSelectedEl.style.borderWidth = "2px";
-
-
-
-    window.selectedListId = clickedID;
-
-    doCopyToEdit();
+let newSelectedEl = gEl(clickedID );
+newSelectedEl.style.borderStyle = "solid";
+newSelectedEl.style.borderColor = "rgb(190,190,190)";
+newSelectedEl.style.borderWidth = "5px";
+window.selectedListId = clickedID;
+doCopyToEdit();
 
 
 
