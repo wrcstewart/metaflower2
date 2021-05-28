@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
 <style>
 * {
   box-sizing: border-box;
@@ -10,7 +11,6 @@
     margin:0px;
     list-style-position: inside;
  list-style-type:none
-
 }
 
 #outer {
@@ -32,12 +32,10 @@
     size:18
 }
 #privateListContainerID {
-
     padding:4px;
 }
 ol {
 padding:5px;
-
 }
 
 li {
@@ -45,63 +43,78 @@ li {
     border-style:solid;
     border:rgb(0,0,0)
 }
-
-
-
 </style>
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js">
+    </script>
+
+    <script src="/socket.io/socket.io.js"></script>
 
 </head>
 
-
-
-
 <body onload = "setUpPage()">
 
-
-<!--
-<textarea id="ta1"  onkeyup="isReturn(ev)" placeholder="enter text here"></textarea>
--->
-
-
-
-
-
-
-
+<!-- the main lists -->
 <div id = "privateListContainerID">
     <ol id = "privateListID" reversed>
     </ol>
 </div>
 
-
+<!-- a debug pane -->
 <div id="test">test div</div>
 
-
-
+<!-- mainly devel buttons -->
 <div id = "buttonbar">
-    <button id="but1" style="width:50px" onclick="doBut1()"> ⬅︎ ⬆︎︎ </button>
-    <button id="but2" style="width:50px" onclick="doBut2()"> ⬇︎ </button>
-     <button id="oldDefaultName" style="width:50px" onclick="doBut5()">Set To User1</button>
-    <button id="chooseNameBut" style="width:50px" onclick="doBut3()">Set To User2</button>
-    <button id="otherNameBut" style="width:50px" onclick="doBut4()">Set To User3</button>
-
+    <button id="copyOutButID" style="width:50px" onclick="doCopyOut()"> ⬅︎ ⬆︎︎ </button>
+    <button id="copyToEditButID" style="width:50px" onclick="doCopyToEdit()"> ⬇︎ </button>
+     <button id="setUser1ButID" style="width:50px" onclick="doSetUser1()">Set To User1</button>
+    <button id="setUser2ButID" style="width:50px" onclick="doSetUser2()">Set To User2</button>
+    <button id="setUser3ButID" style="width:50px" onclick="doSetUser3()">Set To User3</button>
 </div>
 
+<!-- container div for the summernote div / seems way to style summernote -->
 <div id="outer">
     <div id="summernote"></div>
 </div>
 
 
-
 </body>
 
-<script src="/socket.io/socket.io.js"></script>
+
 
 <script>
+    function setUpPage(){
+
+    window.selectedListId = null;
+
+    setStyle("test","1px","400px","700px","100px","MediumSeaGreen");
+
+    setStyle("privateListContainerID","1px","400px","1px","200px","rgb(240,240,240)");
+    document.getElementById("privateListContainerID").style.overflow = "scroll";
+
+    setStyle("privateListID","1px","400px","1px","199px","rgb(240,240,240");
+    document.getElementById("privateListID").style.overflow = "scroll";
+
+    //let ta1 = document.getElementById("ta1");
+    //ta1.addEventListener('keyup',logKey1);
+
+   $('#summernote').summernote({
+       placeholder: 'Hello stand alone ui',
+        height:300
+      });
+
+}//end setUpPage ------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
     var socket = io();
 
     socket.on('chat message', function(msg) {
@@ -118,7 +131,6 @@ li {
             oldListEl.style.borderStyle = "dotted";
         oldListEl.style.borderColor = "rgb(196,196,196)";
          oldListEl.style.borderWidth = "1px";
-
         }
 
 
@@ -131,7 +143,7 @@ li {
 
 
         if (msg.user == "buddy"){
-            aListEl.style.backgroundColor = "rgb(220,220,255)"
+            aListEl.style.backgroundColor = "rgb(220,255,220)"
         } else {
              aListEl.style.backgroundColor = "rgb(240,240,240)"
 
@@ -143,34 +155,6 @@ li {
         aListEl.addEventListener('dblclick',listClick);
         privateListID.insertBefore(aListEl,privateListID.childNodes[0]);
     });
-/*
-    var socket2 = io();
-
-    socket2.on('chat message', function(msg) {
-
-        let privateListID = document.getElementById("privateListID");
-
-        let items = privateListID.getElementsByTagName("li");
-        let lenList = items.length;
-        let newIDNumber = lenList +1;
-        let newID = "listItemID"+ newIDNumber;
-
-
-        let aListEl = document.createElement('li');
-        aListEl.id = newID;
-
-        aListEl.innerHTML = msg;
-
-
-        aListEl.addEventListener('click',listClick);
-        privateListID.insertBefore(aListEl,privateListID.childNodes[0]);
-    });
-
-*/
-
-
-
-
 
 </script>
 
@@ -203,7 +187,7 @@ let newSelectedEl =document.getElementById(clickedID );
 
     window.selectedListId = clickedID;
 
-    doBut2();
+    doCopyToEdit();
 
 
 
@@ -234,35 +218,6 @@ function setStyle(elementId,left,width,top,height,bkColor){
    el.style.backgroundColor = bkColor;
 }//end setStyle
 
-function setUpPage(){
-
-    window.selectedListId = null;
-
-    setStyle("test","205px","200px","1px","200px","MediumSeaGreen");
-
-    setStyle("privateListContainerID","1px","200px","1px","200px","rgb(240,240,240)");
-    document.getElementById("privateListContainerID").style.overflow = "scroll";
-
-    setStyle("privateListID","1px","200px","1px","199px","rgb(240,240,240");
-    document.getElementById("privateListID").style.overflow = "scroll";
-
-    //let ta1 = document.getElementById("ta1");
-    //ta1.addEventListener('keyup',logKey1);
-
-   $('#summernote').summernote({
-       placeholder: 'Hello stand alone ui',
-        height:300
-      });
-
-
-
-
-
-
-
-
-
-}
 
 function logKey1(e){
 
@@ -276,21 +231,9 @@ function logKey1(e){
 function serviceReturnOn1(){
 //****currently bypassed by return on next line ***
     return;
-
-   // let ta1 = document.getElementById("ta1");
-    //let privateListID = document.getElementById("privateListID");
-   // let items = privateListID.getElementsByTagName("li");
-   // let lenList = items.length;
-    //let newIDNumber = lenList +1;
-   // let newID = "listItemID"+ newIDNumber;
-   // let htmlIdPhrase = "<li id=" +newID +">";
-   // let myString = ta1.value; ta1.value = "";
-    //privateListID.innerHTML = htmlIdPhrase + myString +"</li>" + privateListID.innerHTML;
-
-    //socket.emit('chat message',myString );
 }
 
-function doBut1(){
+function doCopyOut(){
 
  //let ta1 = document.getElementById("ta1");
     //let privateListID = document.getElementById("privateListID");
@@ -309,81 +252,47 @@ function doBut1(){
 
     socket.emit('chat message',myString );
 
-
-
-
-/* DEVEL RELICS BUT MAYBE USEFUL SNIPPETS
-   ta2 = document.getElementById("ta2");
-//ta2.value = "OOOOO";
-    let ta3 = document.getElementById("ta3");
-let myString = ta2.value;
- ta3.value = ta3.value + myString;
-//alert("test");
-    let privateListID = document.getElementById("privateListID");
-    let l1 = document.getElementById("listItemID2");
-    //l1.style.listStyleType = "circle";
-    l1.style.backgroundColor = "grey";
-    l1.style.color ="darkslategrey";
- l1.style.fontFamily = "Arial, Helvetica, sans-serif";
-    //l1.style.textShadow = "2px 0px #000000";
-    //privateListID.style.listStylePosition = "inside";
-    //privateListID.style.backgroundColor = "red";
-*/
-
-
-
-
-
-    }
-
-    function doBut2(){
-
-let elLiEl = document.getElementById(window.selectedListId);
-let tempString = elLiEl.innerHTML;
-
-    $('#summernote').summernote('code',tempString) ;
-
-    }
-
-function doBut3(){
-
-window.user = "user2"
-    show("user2 set");
-    let socketID = socket.id;
-    let user = "user2"
-    let userData = {socketID:socketID, user:user}
-    socket.emit('client data',userData );
-
-
 }
 
-function doBut4(){
-
-window.user = "user3";
-    show("user3 set");
-    let socketID = socket.id;
-    let user = "user3"
-    let userData = {socketID:socketID, user:user}
-    socket.emit('client data',userData );
-
-}
-
-function doBut5(){
-
-window.user = "user1";
+function doCopyToEdit(){
+        let elLiEl = gEl(window.selectedListId);
+        let tempString = elLiEl.innerHTML + $('#summernote').summernote('code');
+        $('#summernote').summernote('code',tempString) ;
+    }
+// bit lazy below but is only temp
+function doSetUser1(){
+    window.user = "user1";
     show("user1 set");
     let socketID = socket.id;
     let user = "user1"
     let userData = {socketID:socketID, user:user}
     socket.emit('client data',userData );
-
 }
 
+function doSetUser2(){
+    window.user = "user2"
+    show("user2 set");
+    let socketID = socket.id;
+    let user = "user2"
+    let userData = {socketID:socketID, user:user}
+    socket.emit('client data',userData );
+}
+
+function doSetUser3(){
+    window.user = "user3";
+    show("user3 set");
+    let socketID = socket.id;
+    let user = "user3"
+    let userData = {socketID:socketID, user:user}
+    socket.emit('client data',userData );
+}
+
+//utility functions
 function show(aString){
 document.getElementById("test").innerHTML = aString +"<br>";
 }
 
-
+function gEl(id){return( document.getElementById(id))}
 </script>
 
 </html>
