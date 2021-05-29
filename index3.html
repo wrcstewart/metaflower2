@@ -28,7 +28,7 @@
     background-color:rgb(240,240,240) ;
         position:absolute;
         top:220px;
-        width:300px;
+        width:400px;
         height:30px;
         left:10px;
     fonts-size:18;
@@ -79,6 +79,8 @@ li {
      <button id="setUser1ButID" style="width:50px" onclick="doSetUser1()">Set To User1</button>
     <button id="setUser2ButID" style="width:50px" onclick="doSetUser2()">Set To User2</button>
     <button id="setUser3ButID" style="width:50px" onclick="doSetUser3()">Set To User3</button>
+    <button id="suggestButID" style="width:60px" onclick="doSuggest()">Suggest Publish</button>
+    <button id="publishButID" style="width:60px" onclick="doPublish()">Agree Publish</button>
 </div>
 
 <!-- container div for the summernote div / seems way to style summernote -->
@@ -160,15 +162,9 @@ li {
         aListEl.innerHTML = msg.message;
         aListEl.addEventListener('dblclick',listClick);
         privateList.insertBefore(aListEl,privateList.childNodes[0]);
-    });
+    });//end socket on chat message -------------------------------------------------------------------------------
 
-
-
-
-
-
-
-function listClick(e){
+    function listClick(e){
 
     var clickedID = this.id;
 
@@ -185,23 +181,11 @@ newSelectedEl.style.borderColor = "rgb(190,190,190)";
 newSelectedEl.style.borderWidth = "5px";
 window.selectedListId = clickedID;
 doCopyToEdit();
-
-
-
-
-    //let testHTML = document.getElementById("test").innerHTML;
-  // testHTML = this.innerHTML;
-   //testHTML = testHTML + "<br" + socket.id;
-document.getElementById("test").innerHTML = this.innerHTML;
-let testStuff = document.getElementById("test").innerHTML;
-document.getElementById("test").innerHTML = testStuff + "<br>" +socket.id;
-
-
-//document.getElementById("test").innerHTML = document.getElementById("test").innerHTML + "<br>" +socket2.id;
-
-//document.getElementById("test").innerHTML =  + "<br>" +socket2.id;
-
-}
+// devel and debug stuff
+gEl("test").innerHTML = this.innerHTML;
+let testStuff = gEl("test").innerHTML;
+gEl("test").innerHTML = testStuff + "<br>" +socket.id;
+    }//end list click --------------------------------------------------------------------------------------------
 
 function setStyle(elementId,left,width,top,height,bkColor){
     let el = document.getElementById(elementId);
@@ -210,33 +194,14 @@ function setStyle(elementId,left,width,top,height,bkColor){
     el.style.left = left; el.style.width =width;
     el.style.top = top ; el.style.height = height;
     //el.innerText = "cat"
+    el.style.backgroundColor = bkColor;
+}//end setStyle---------------------------------------------------------------------------------------
 
 
-   el.style.backgroundColor = bkColor;
-}//end setStyle
-
-
-
-
-function doCopyOut(){
-
- //let ta1 = document.getElementById("ta1");
-    //let privateListID = document.getElementById("privateListID");
-   // let items = privateListID.getElementsByTagName("li");
-   // let lenList = items.length;
-    //let newIDNumber = lenList +1;
-   // let newID = "listItemID"+ newIDNumber;
-   // let htmlIdPhrase = "<li id=" +newID +">";
-
-
-    //let myString = ta1.value; ta1.value = "";
+    function doCopyOut(){
 
     let myString = $('#summernote').summernote('code');
-
-    //privateListID.innerHTML = htmlIdPhrase + myString +"</li>" + privateListID.innerHTML;
-
     socket.emit('chat message',myString );
-
 }
 
 function doCopyToEdit(){
