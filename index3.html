@@ -97,6 +97,9 @@ li {
     var socket = io();
     window.user = "user1";
     show("user1 set");
+    window.status = 'temp';
+    window.suggestedId = null;
+
 
 
     function setUpPage(){
@@ -151,6 +154,8 @@ li {
         aListEl.style.borderStyle = "solid";
         aListEl.style.borderColor = "rgb(190,190,190)";
         aListEl.style.borderWidth = "3px";
+       aListEl.setAttribute('user',msg.user);
+      aListEl.setAttribute('status',msg.status);
 
 
         if (msg.user == "buddy"){
@@ -159,9 +164,19 @@ li {
              aListEl.style.backgroundColor = "rgb(220,255,220)"
         }
 
-        aListEl.innerHTML = msg.message;
+        aListEl.innerHTML = msg.message; show(msg.status);
         aListEl.addEventListener('dblclick',listClick);
         privateList.insertBefore(aListEl,privateList.childNodes[0]);
+
+        if(msg.status === 'suggested') {
+            aListEl.setAttribute("status","suggested");
+            if (window.suggestedId) {gEl(window.suggestedId).setAttribute('status','temp)')}
+          setListElementStyle(gEl(window.suggestedId);
+          window.suggestedId = aListEl.id;
+        };
+
+        setListElementStyle(aListEl);
+
     });//end socket on chat message -------------------------------------------------------------------------------
 
     function listClick(e){
@@ -173,6 +188,7 @@ if(window.selectedListId){
             oldListEl.style.borderStyle = "dotted";
             oldListEl.style.borderColor = "rgb(196,196,196)";
             oldListEl.style.borderWidth = "1px";
+            oldListEl.setAttribute("selected","false");
 }
 
 let newSelectedEl = gEl(clickedID );
@@ -180,6 +196,7 @@ newSelectedEl.style.borderStyle = "solid";
 newSelectedEl.style.borderColor = "rgb(190,190,190)";
 newSelectedEl.style.borderWidth = "5px";
 window.selectedListId = clickedID;
+newSelectedEl.setAttribute("selected","true");
 doCopyToEdit();
 // devel and debug stuff
 gEl("test").innerHTML = this.innerHTML;
@@ -199,9 +216,17 @@ function setStyle(elementId,left,width,top,height,bkColor){
 
 
     function doCopyOut(){
-
+    window.status = 'temp';
     let myString = $('#summernote').summernote('code');
-    socket.emit('chat message',myString );
+    let msg = {user:'self',status:window.status,message:myString}
+    socket.emit('chat message',msg);
+}
+
+ function doSuggest(){
+    window.status = 'suggested';
+    let myString = $('#summernote').summernote('code');
+    let msg = {user:'self',status:"suggested",message:myString}
+    socket.emit('chat message',msg);
 }
 
 function doCopyToEdit(){
@@ -235,6 +260,47 @@ function doSetUser3(){
     let user = "user3"
     let userData = {socketID:socketID, user:user}
     socket.emit('client data',userData );
+}
+
+function setListElementStyle(liEl){
+
+
+         let user = liEl.getAttribute("user");
+         let status = liEl.getAttribute("status")
+        let selected =  liEl.getAttribute("selected");
+
+
+
+
+    if (status === 'temp' && selected === 'false'){
+        liEl.style.borderStyle = "dotted";
+            liEl.style.borderColor = "rgb(196,196,196)";
+            liEl.style.borderWidth = "1px";
+    }
+
+    if (status === 'temp' && selected === 'true'){
+        liEl.style.borderStyle = "solid";
+            liEl.style.borderColor = "rgb(180,180,180)";
+            liEl.style.borderWidth = "5px";
+    }
+
+    if (status === 'suggested' && user === 'self'){
+        liEl.style.borderColor = "rgb(255,0,0)";
+         liEl.style.borderStyle = "solid";
+        liEl.style.borderWidth = "5px";
+
+    }
+
+     if (status === 'suggested' && user === 'buddy'){
+        liEl.style.borderColor = "rgb(255,215,0)";
+         liEl.style.borderStyle = "solid";
+        liEl.style.borderWidth = "5px";
+
+    }
+
+
+
+
 }
 
 //utility functions
