@@ -156,6 +156,8 @@ li {
         aListEl.style.borderWidth = "3px";
        aListEl.setAttribute('user',msg.user);
       aListEl.setAttribute('status',msg.status);
+      alert(aListEl.getAttribute('status'));
+      aListEl.setAttribute('selected','false');
 
 
         if (msg.user == "buddy"){
@@ -169,15 +171,28 @@ li {
         privateList.insertBefore(aListEl,privateList.childNodes[0]);
 
         if(msg.status === 'suggested') {
+
             aListEl.setAttribute("status","suggested");
-            if (window.suggestedId) {gEl(window.suggestedId).setAttribute('status','temp)')}
-          setListElementStyle(gEl(window.suggestedId);
-          window.suggestedId = aListEl.id;
+            if (window.suggestedId) {
+                gEl(window.suggestedId).setAttribute('status', 'temp)')
+
+                setListElementStyle(gEl(window.suggestedId));
+            }
+            window.suggestedId = aListEl.id;
+
+
         };
+
+        alert("enter list style soon");
 
         setListElementStyle(aListEl);
 
     });//end socket on chat message -------------------------------------------------------------------------------
+
+
+
+
+
 
     function listClick(e){
 
@@ -261,6 +276,8 @@ function doSetUser3(){
     let userData = {socketID:socketID, user:user}
     socket.emit('client data',userData );
 }
+// check if getting into this function selected is prob
+
 
 function setListElementStyle(liEl){
 
@@ -269,7 +286,7 @@ function setListElementStyle(liEl){
          let status = liEl.getAttribute("status")
         let selected =  liEl.getAttribute("selected");
 
-
+alert(user + status+selected);
 
 
     if (status === 'temp' && selected === 'false'){
