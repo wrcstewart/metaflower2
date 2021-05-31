@@ -36,10 +36,12 @@ io.on('connection', (socket) => {
 io.on('connection', (socket) => {
     socket.on('chat message', (msg) => {
 
+        let message = msg.message;
+        let status = msg.status;
+        console.log(status);
 
-
-        io.to(socket.id).emit('chat message',{user:"self",message:msg});
-       io.to(chatPairs[socket.id]).emit('chat message',{user:"buddy", message:msg});
+        io.to(socket.id).emit('chat message',{user:"self",status:status,message:message});
+       io.to(chatPairs[socket.id]).emit('chat message',{user:"buddy",status:status, message:message});
         //io.emit('chat message', msg);
         //console.log(msg);
         //console.log(socket.id);
