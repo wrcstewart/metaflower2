@@ -27,9 +27,9 @@
 #buttonbar{
     background-color:rgb(240,240,240) ;
         position:absolute;
-        top:210px;
-        width:410px;
-        height:35px;
+        top:205px;
+        width:600px;
+        height:25px;
         left:1px;
     fonts-size:18;
     size:18
@@ -85,22 +85,31 @@ li {
 <div id="test"></div>
 
 <!-- mainly devel buttons -->
-<div id = "buttonbar">
+<div id = "buttonbar"> Type below.
     <button id="copyOutButID"  style="width:50px" onclick="doCopyOut()"> ⬅︎ ⬆︎︎ </button>
     <button id="copyToEditButID" style="width:50px" onclick="doCopyToEdit()"> ⬇︎ </button>
-     <button id="setUser1ButID" style="width:50px" onclick="doSetUser1()">Set To User1</button>
-    <button id="setUser2ButID" style="width:50px" onclick="doSetUser2()">Set To User2</button>
-    <button id="setUser3ButID" style="width:50px" onclick="doSetUser3()">Set To User3</button>
-    <button id="suggestButID" style="width:60px" onclick="doSuggest()">Ready for Publish?</button>
-    <button id="publishButID"  style="width:60px" onclick="doPublish()">Agree Publish</button>
+
+    <button id="suggestButID" style="width:120px" onclick="doSuggest()">Ready for Publish?</button>
+    <button id="publishButID"  style="width:120px" onclick="doPublish()">Agree Publish</button>
 </div>
 
-<div id="tempButtons ></div>
+<div id="tempButtons" >
+<button id="setUser1ButID" style="width:50px" onclick="doSetUser1()">Set To User1</button>
+    <button id="setUser2ButID" style="width:50px" onclick="doSetUser2()">Set To User2</button>
+    <button id="setUser3ButID" style="width:50px" onclick="doSetUser3()">Set To User3</button>
+</div>
 
 <!-- container div for the summernote div / seems way to style summernote -->
+<!--
+
 <div id="outer">
     <div id="summernote"></div>
 </div>
+-->
+<div id="outer">
+    <div id="summernote"></div>
+</div>
+
 
 </body>
 <!-- --------------------------------------------------------------------------------------------------------------- -->
@@ -125,24 +134,44 @@ li {
 
 
     setStyle("test","1px","400px","700px","100px","MediumSeaGreen");
+     setStyle("tempButtons","500px","200px","700px","100px","MediumSeaGreen");
 
     //setStyle("privateListContainerID","1px","400px","1px","200px","rgb(240,240,240)");
-      setStyle("privateListContainerID","1px","400px","1px","200px","rgb(240,240,240)");
+      setStyle("privateListContainerID","1px","600px","1px","200px","rgb(240,240,240)");
     //gEl("privateListContainerID").style.overflow = "scroll";
 
-    setStyle("privateListID","1px","400px","1px","199px","rgb(240,240,240");
+    setStyle("privateListID","1px","600px","1px","199px","rgb(240,240,240");
 
-    setStyle("outer","1px","400px","250px","322px",privateBackgroundSelfCol());
+    setStyle("outer","1px","600px","235px","250px",privateBackgroundSelfCol());
 
    gEl("privateListID").style.overflow = "scroll";
    gEl("test").style.overflow = "scroll";
-
-   let placeholderString = "Type here";
+gEl("outer").style.overflow = "scroll";
+   let placeholderString = "test";
+   requestSystemMsgToSelf("explain panes");
 
     $('#summernote').summernote({
-            placeholder: placeholderString,
-            height:200,
-            airMode:true,
+
+        popover:{
+
+            air: [
+
+
+
+      ['font', ['bold','italic', 'underline','strikethrough', 'clear','forecolor']],
+        ['fontname', ['fontname','fontsize']],
+    ['para', ['ul', 'ol', 'paragraph']],
+['insert', ['link']]
+    ]
+  }
+
+
+        ,
+
+airMode:true,
+
+
+
 
         backColor:"Blue",
 
@@ -153,7 +182,7 @@ li {
                 }
             }
         });
-
+$('#summernote').summernote('code',"<p></p> ") ;
 
     }//end setUpPage ------------------------------------------------------------------------------------------------------
 
@@ -298,6 +327,15 @@ function setStyle(elementId,left,width,top,height,bkColor){
     socket.emit('chat message',msg);
 }
 
+function requestSystemMsgToSelf(msgCode){
+
+
+
+
+
+    socket.emit('help',msgCode);
+}
+
  function doSuggest(){
     window.status = 'suggested';
     let myString = $('#summernote').summernote('code');
@@ -341,7 +379,7 @@ function doSetUser3(){
 
     function doPublish(){
 
-      if (confirm("You are about to publish the yellow framed item in your private list")) {
+      if (confirm("You are about to publish the yellow framed item in your temporary private list to the permanent public list")) {
 
           alert("ok")
       }
@@ -418,12 +456,32 @@ show("within setListElement with user:" + user+ " status:" + status +" selected:
          gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
  }
 
+if ( (status === 'help' && user === 'self') && selected ==='false') {
+     liEl.style.borderColor = "rgb(215,215,215)";
+     liEl.style.borderStyle = "dotted";
+     liEl.style.borderWidth = "2px";
+     window.publishButDisabled = true;
+     //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
+      gEl("publishButID").style.borderWidth = "1px";
+         gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
+         liEl.style.backgroundColor = "rgb(255,255,255)";
+ }
 
+ if (status === 'help' && selected === 'true'){
+        liEl.style.borderStyle = "solid";
+            liEl.style.borderColor = "rgb(180,180,180)";
+            liEl.style.borderWidth = "4px";
+             liEl.style.backgroundColor = "rgb(255,255,255)";
+            window.publishButDisabled =true;
+            //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
+         gEl("publishButID").style.borderWidth = "1px";
+         gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
+    }
 
 
 
   if ((status === 'suggested' && user === 'buddy') && selected==='false'){
-        liEl.style.borderColor = "rgb(255,215,0)";
+        liEl.style.borderColor = "rgb(255,215,215)";
          liEl.style.borderStyle = "dotted";
         liEl.style.borderWidth = "2px";
         window.publishButDisabled =true;
