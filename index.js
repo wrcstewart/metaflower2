@@ -46,6 +46,19 @@ io.on('connection', (socket) => {
         //console.log(msg);
         //console.log(socket.id);
     });
+    socket.on('help', (msg) => {
+        let helpMessage ="";
+        if( msg === 'explain panes'){
+
+            helpMessage = "Explanation about the panes";
+        }
+        let status = 'help';
+        console.log(msg);
+        io.to(socket.id).emit('chat message',{user:"self",status:status,message:helpMessage});
+    });
+
+
+
 });
 
 io.on('connection', (socket) => {
