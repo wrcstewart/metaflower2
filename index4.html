@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<style>
+* {
+  box-sizing: border-box;
+    padding:0px;
+
+    margin:1px;
+    list-style-position: inside;
+ list-style-type:none
+}
+
+#buttonbar{
+    background-color:rgb(240,240,240) ;
+        position:absolute;
+        top:205px;
+        width:600px;
+        height:25px;
+        left:1px;
+    fonts-size:18;
+    size:18
+}
+button{
+    box-sizing: border-box;
+    box-shadow:none;
+    outline:0;
+    border-style: solid;
+}
+#privateListContainerID {
+    padding:1px;
+}
+ol {
+padding:1px;
+}
+li {
+    border:2px;
+    /*
+    border-style:solid;
+    border:rgb(0,0,0)
+
+     */}
+</style>
+
+<!-- -------------------------------------------------------------------------- -->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js">
+    </script>
+
+    <!--use bootstrap below - currently only for color classes -->
+
+ <!--
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+ -->
+    <!--
+    <script src="/socket.io/socket.io.js"></script>
+-->
+</head>
+
+<!-- ------------------------------------------------------------------------------------------------------------ -->
+
+<body onload = "setUpPage()">
+
+<!-- the main lists -->
+<div id = "privateListContainerID">
+    <ol id = "privateListID" reversed>
+    </ol>
+</div>
+<div id = "publicListContainerID">
+    <ol id = "publicListID" reversed>
+    </ol>
+</div>
+
+<!-- a debug pane -->
+<div id="test"></div>
+
+
+<div id = "buttonbar"> Type below.
+    <button id="copyOutButID"  style="width:50px" onclick="doCopyOut()"> ⬅︎ ⬆︎︎ </button>
+    <button id="copyToEditButID" style="width:50px" onclick="doCopyToEdit()"> ⬇︎ </button>
+
+    <button id="suggestButID" style="width:120px" onclick="doSuggest()">Ready for Publish?</button>
+    <button id="publishButID"  style="width:120px" onclick="doPublish()">Agree Publish</button>
+</div>
+
+<div id="tempButtons" >
+<button id="setUser1ButID" style="width:50px" onclick="doSetUser1()">Set To User1</button>
+    <button id="setUser2ButID" style="width:50px" onclick="doSetUser2()">Set To User2</button>
+    <button id="setUser3ButID" style="width:50px" onclick="doSetUser3()">Set To User3</button>
+</div>
+
+<!-- container div for the summernote div / seems way to style summernote -->
+<div id="outer">
+    <div id="summernote"></div>
+</div>
+
+
+</body>
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+
+
+<script src="/socket.io/socket.io.js" >
+
+    var socket = io();
+    //window.user = "user1";
+
+    window.status = 'temp';
+    window.suggestedId = null;
+    window.publishButDisabled =true;
+
+
+
+    function setUpPage(){
+
+    window.selectedListId = null;
+
+    gEl("publishButID").disabled = true;
+
+
+    setStyle("test","1px","400px","750px","100px","MediumSeaGreen");
+     setStyle("tempButtons","500px","200px","750px","100px","MediumSeaGreen");
+
+
+      setStyle("privateListContainerID","1px","600px","1px","200px","rgb(240,240,240)");
+
+
+    setStyle("privateListID","1px","600px","1px","199px","rgb(240,240,240");
+
+     setStyle("publicListContainerID","1px","600px","500px","200px","rgb(190,255,190)");
+
+
+    setStyle("publicListID","1px","600px","501px","199px","rgb(190,255,190)");
+
+    setStyle("outer","1px","600px","235px","250px",privateBackgroundSelfCol());
+
+   gEl("privateListID").style.overflow = "scroll";
+   gEl("test").style.overflow = "scroll";
+gEl("outer").style.overflow = "scroll";
+   let placeholderString = "test";
+   requestSystemMsgToSelf("explain panes");
+
+    $('#summernote').summernote({
+
+        popover:{
+
+            air: [
+
+
+
+      ['font', ['bold','italic', 'underline','strikethrough', 'clear','forecolor']],
+        ['fontname', ['fontname','fontsize']],
+    ['para', ['ul', 'ol', 'paragraph']],
+['insert', ['link']]
+    ]
+  }
+
+
+        ,
+
+airMode:true,
+
+
+
+
+        backColor:"Blue",
+
+            callbacks: {
+
+                onKeydown: function (e) {
+                    logKey1(e)
+                }
+            }
+        });
+$('#summernote').summernote('code',"<p></p> ") ;
+
+    }//end setUpPage ------------------------------------------------------------------------------------------------------
+
+    function logKey1(e){  if(e.keyCode === 13  &&  e.shiftKey ) {doCopyOut()}  }
+
+
+
+    socket.on('chat message', function(msg) {
+
+        let privateList = gEl("privateListID");
+        let items = privateList.getElementsByTagName("li");
+        let lenList = items.length;
+        let newIDNumber = lenList +1;
+        let newID = "listItemID"+ newIDNumber;
+
+        if(window.selectedListId){
+            let oldListEl = gEl(window.selectedListId);
+            oldListEl.setAttribute("selected","false");
+            setListElementStyle(oldListEl);
+            /*
+            oldListEl.style.borderStyle = "dotted";
+            oldListEl.style.borderColor = "rgb(196,196,196)";
+            oldListEl.style.borderWidth = "1px";
+            */
+
+        }
+         window.selectedListId = newID;
+
+
+        let aListEl = document.createElement('li');
+        aListEl.id = newID;
+        aListEl.style.borderStyle = "solid";
+        aListEl.style.borderColor = "rgb(190,190,190)";
+        aListEl.style.borderWidth = "3px";
+       aListEl.setAttribute('user',msg.user);
+      aListEl.setAttribute('status',msg.status);
+     // alert(aListEl.getAttribute('status'));
+      aListEl.setAttribute('selected','false');
+
+
+        if (msg.user == "buddy"){
+            aListEl.style.backgroundColor = privateBackgroundBuddyCol();
+             aListEl.style.color = buddyTextCol();
+        } else {
+             aListEl.style.backgroundColor = privateBackgroundSelfCol();
+             aListEl.style.color = selfTextCol();
+        }
+
+        aListEl.innerHTML = msg.message;// show(msg.status);
+        aListEl.addEventListener('dblclick',listClick);
+        privateList.insertBefore(aListEl,privateList.childNodes[0]);
+
+        if(msg.status === 'suggested') {
+
+            aListEl.setAttribute("status","suggested");
+            if (window.suggestedId) {
+                gEl(window.suggestedId).setAttribute('status', 'temp)')
+
+                setListElementStyle(gEl(window.suggestedId));
+            }
+            window.suggestedId = aListEl.id;
+
+
+        };
+
+        //alert("enter list style soon");
+
+        aListEl.setAttribute("selected",'true');
+
+        setListElementStyle(aListEl);
+
+    });//end socket on chat message -------------------------------------------------------------------------------
+
+
+
+
+
+
+    function listClick(e){
+
+    var clickedID = this.id;
+
+
+/*
+if(window.selectedListId){
+            let oldListEl = gEl(window.selectedListId);
+            oldListEl.style.borderStyle = "dotted";
+            oldListEl.style.borderColor = "rgb(196,196,196)";
+            oldListEl.style.borderWidth = "1px";
+            oldListEl.setAttribute("selected","false");
+}
+*/
+        if(window.selectedListId){
+            let oldListEl = gEl(window.selectedListId);
+            oldListEl.setAttribute("selected","false");
+            setListElementStyle(oldListEl);
+            /*
+            oldListEl.style.borderStyle = "dotted";
+            oldListEl.style.borderColor = "rgb(196,196,196)";
+            oldListEl.style.borderWidth = "1px";
+            */
+
+        }
+         window.selectedListId = clickedID;
+
+
+let newSelectedEl = gEl(clickedID );
+
+/*
+newSelectedEl.style.borderStyle = "solid";
+newSelectedEl.style.borderColor = "rgb(190,190,190)";
+newSelectedEl.style.borderWidth = "5px";
+
+ */
+//window.selectedListId = clickedID;
+newSelectedEl.setAttribute("selected","true");
+setListElementStyle(newSelectedEl);
+
+
+doCopyToEdit();
+// devel and debug stuff
+gEl("test").innerHTML = this.innerHTML;
+let testStuff = gEl("test").innerHTML;
+gEl("test").innerHTML = testStuff + "<br>" +socket.id;
+    }//end list click --------------------------------------------------------------------------------------------
+
+function setStyle(elementId,left,width,top,height,bkColor){
+    let el = document.getElementById(elementId);
+    el.style.fontFamily = "Arial, Helvetica, sans-serif";
+    el.style.position = "absolute";
+    el.style.left = left; el.style.width =width;
+    el.style.top = top ; el.style.height = height;
+    //el.innerText = "cat"
+    el.style.backgroundColor = bkColor;
+}//end setStyle---------------------------------------------------------------------------------------
+
+
+    function doCopyOut(){
+    window.status = 'temp';
+    let myString = $('#summernote').summernote('code');
+    let msg = {user:'self',status:window.status,message:myString}
+    socket.emit('chat message',msg);
+}
+
+function requestSystemMsgToSelf(msgCode){
+
+
+
+
+
+    socket.emit('help',msgCode);
+}
+
+ function doSuggest(){
+    window.status = 'suggested';
+    let myString = $('#summernote').summernote('code');
+    let msg = {user:'self',status:"suggested",message:myString}
+    socket.emit('chat message',msg);
+}
+
+function doCopyToEdit(){
+        let elLiEl = gEl(window.selectedListId);
+        let tempString = elLiEl.innerHTML + $('#summernote').summernote('code');
+        $('#summernote').summernote('code',tempString) ;
+    }
+// bit lazy below but is only temp
+function doSetUser1(){
+    window.user = "user1";
+    show("user1 set");
+    let socketID = socket.id;
+    let user = "user1"
+    let userData = {socketID:socketID, user:user}
+    socket.emit('client data',userData );
+}
+
+function doSetUser2(){
+    window.user = "user2"
+    show("user2 set");
+    let socketID = socket.id;
+    let user = "user2"
+    let userData = {socketID:socketID, user:user}
+    socket.emit('client data',userData );
+}
+
+function doSetUser3(){
+    window.user = "user3";
+    show("user3 set");
+    let socketID = socket.id;
+    let user = "user3"
+    let userData = {socketID:socketID, user:user}
+    socket.emit('client data',userData );
+}
+// check if getting into this function selected is prob
+
+    function doPublish(){
+
+      if (confirm("You are about to publish the yellow framed item in your temporary private list to the permanent public list")) {
+
+          alert("ok")
+      }
+
+        else {return}
+    }
+
+
+function setListElementStyle(liEl){
+
+
+         let user = liEl.getAttribute("user");
+         let status = liEl.getAttribute("status")
+        let selected =  liEl.getAttribute("selected");
+
+         let publishButStyleEnabledColor = "rgb(256,215,0)";
+         let publishButStyleDisabledColor ="rgb(200,200,200)"
+
+show("within setListElement with user:" + user+ " status:" + status +" selected:" +selected);
+
+
+    if (status === 'temp' && selected === 'false'){
+        liEl.style.borderStyle = "dotted";
+            liEl.style.borderColor = "rgb(196,196,196)";
+            liEl.style.borderWidth = "2px";
+            window.publishButDisabled =true;
+
+            gEl("publishButID").style.borderWidth = "1px";
+         gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
+    }
+
+    if (status === 'temp' && selected === 'true'){
+        liEl.style.borderStyle = "solid";
+            liEl.style.borderColor = "rgb(180,180,180)";
+            liEl.style.borderWidth = "4px";
+            window.publishButDisabled =true;
+            //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
+         gEl("publishButID").style.borderWidth = "1px";
+         gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
+    }
+
+    //------------------------------------
+
+    if ( (status === 'suggested' && user === 'self') && selected ==='true'){
+        liEl.style.borderColor = "rgb(100,100,255)";
+         liEl.style.borderStyle = "solid";
+        liEl.style.borderWidth = "4px";
+        window.publishButDisabled =true;
+        //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
+         gEl("publishButID").style.borderWidth = "1px";
+         gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
+    }
+
+     if ((status === 'suggested' && user === 'buddy') && selected==='true'){
+        liEl.style.borderColor = "rgb(255,215,0)";
+         liEl.style.borderStyle = "solid";
+        liEl.style.borderWidth = "4px";
+        // bit naughty but going to enable a button here
+         window.publishButDisabled =false;
+         gEl("publishButID").style.borderWidth = "2px";
+         gEl("publishButID").style.borderColor = publishButStyleEnabledColor;
+
+    }
+
+     //--------------------------------------
+
+ if ( (status === 'suggested' && user === 'self') && selected ==='false') {
+     liEl.style.borderColor = "rgb(255,0,0)";
+     liEl.style.borderStyle = "dotted";
+     liEl.style.borderWidth = "2px";
+     window.publishButDisabled = true;
+     //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
+      gEl("publishButID").style.borderWidth = "1px";
+         gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
+ }
+
+if ( (status === 'help' && user === 'self') && selected ==='false') {
+     liEl.style.borderColor = "rgb(215,215,215)";
+     liEl.style.borderStyle = "dotted";
+     liEl.style.borderWidth = "2px";
+     window.publishButDisabled = true;
+     //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
+      gEl("publishButID").style.borderWidth = "1px";
+         gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
+         liEl.style.backgroundColor = "rgb(255,255,255)";
+ }
+
+ if (status === 'help' && selected === 'true'){
+        liEl.style.borderStyle = "solid";
+            liEl.style.borderColor = "rgb(180,180,180)";
+            liEl.style.borderWidth = "4px";
+             liEl.style.backgroundColor = "rgb(255,255,255)";
+            window.publishButDisabled =true;
+            //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
+         gEl("publishButID").style.borderWidth = "1px";
+         gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
+    }
+
+
+
+  if ((status === 'suggested' && user === 'buddy') && selected==='false'){
+        liEl.style.borderColor = "rgb(255,215,215)";
+         liEl.style.borderStyle = "dotted";
+        liEl.style.borderWidth = "2px";
+        window.publishButDisabled =true;
+       // gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
+       gEl("publishButID").style.borderWidth = "1px";
+         gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
+
+    }
+ gEl("publishButID").disabled = window.publishButDisabled;
+
+}
+
+//utility functions
+function show(aString){
+document.getElementById("test").innerHTML = document.getElementById("test").innerHTML+ aString +"<br>";
+}
+
+function gEl(id){return( document.getElementById(id))}
+
+ function privateBackgroundSelfCol() {return("rgb(160,240,255)")}
+    function privateBackgroundBuddyCol() {return("rgb(255,255,220)")}
+
+function selfTextCol() {return("rgb(0,0,0)")}
+function buddyTextCol() {return("rgb(0,0,0)")}
+
+
+</script>
+
+
+
+
+
+
+
+
+</html>
