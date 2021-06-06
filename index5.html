@@ -202,23 +202,13 @@
 
         let aListEl = document.createElement('li');
         aListEl.id = newID;
-        aListEl.style.borderStyle = "solid";
-        aListEl.style.borderColor = "rgb(190,190,190)";
-        aListEl.style.borderWidth = "3px";
+
         aListEl.setAttribute('user', msg.user);
         aListEl.setAttribute('status', msg.status);
         // alert(aListEl.getAttribute('status'));
         aListEl.setAttribute('selected', 'false');
 
-/*
-        if (msg.user == "buddy") {
-            aListEl.style.backgroundColor = privateBackgroundBuddyCol();
-            aListEl.style.color = buddyTextCol();
-        } else {
-            aListEl.style.backgroundColor = privateBackgroundSelfCol();
-            aListEl.style.color = selfTextCol();
-        }
-*/
+
         aListEl.innerHTML = msg.message;// show(msg.status);
         aListEl.addEventListener('dblclick', listClick);
         privateList.insertBefore(aListEl, privateList.childNodes[0]);
@@ -364,37 +354,64 @@
         let publishButStyleEnabledColor = "rgb(256,215,0)";
         let publishButStyleDisabledColor = "rgb(200,200,200)"
 
+
         show("within setListElement with user:" + user + " status:" + status + " selected:" + selected);
 
         let backgroundSelf = "rgb(160,240,255)";
         let backgroundBuddy = "rgb(255,255,220)";
-        let backgroundHelp =  "rgb(64,64,0)";
+        let backgroundHelp =  "rgb(148,148,148)";
+        let backgroundPublished = "rgb(100,255,100)";
+
 
         if (user === 'self') liEl.style.backgroundColor = backgroundSelf;
         if (user === 'buddy') liEl.style.backgroundColor = backgroundBuddy;
         if (status === 'help') liEl.style.backgroundColor = backgroundHelp;
+        if (status === 'published') liEl.style.backgroundColor = backgroundPublished;
+
+        let borderStyleSelectedTrue = "solid";
+        let borderStyleSelectedFalse = "dotted";
+
+        if (selected === "true"){liEl.style.borderStyle = borderStyleSelectedTrue} else {
+            liEl.style.borderStyle = borderStyleSelectedFalse;
+        }
+
+        let tempBorderWidth = "1px";
+            let suggestedBorderWidth = "4px";
+            let publishedBorderWidth = "4px";
+            let helpBorderWidth = "2px";
+
+        if (status === "temp") liEl.style.borderWidth = tempBorderWidth;
+        if (status === "suggested") liEl.style.borderWidth = suggestedBorderWidth;
+         if (status === "published") liEl.style.borderWidth = publishedBorderWidth;
+          if (status === "help") liEl.style.borderWidth = helpBorderWidth;
+
+         liEl.style.borderColor = "rgb(128,128,128)";
+
+// -------------------------- more complicated cases below -------------
 
 // STATUS = TEMP------------------------------------------------------------------------------------------------
 
 
 
         if (status === 'temp' && selected === 'false' && user === 'self') {
-            liEl.style.borderStyle = "dotted";
-            liEl.style.borderColor = "rgb(196,196,196)";
-            liEl.style.borderWidth = "2px";
-            window.publishButDisabled = true;
-            liEl.style.backgroundColor = privateBackgroundSelfCol();
 
+
+            //liEl.style.borderStyle = "dotted";
+           // liEl.style.borderColor = "rgb(196,196,196)";
+           // liEl.style.borderWidth = "2px";
+
+
+            window.publishButDisabled = true;
             gEl("publishButID").style.borderWidth = "1px";
             gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
         }
 
         if (status === 'temp' && selected === 'false' && user === 'buddy') {
-            liEl.style.borderStyle = "dotted";
-            liEl.style.borderColor = "rgb(196,196,196)";
-            liEl.style.borderWidth = "2px";
+            //liEl.style.borderStyle = "dotted";
+           // liEl.style.borderColor = "rgb(196,196,196)";
+            //liEl.style.borderWidth = "2px";
             window.publishButDisabled = true;
-            liEl.style.backgroundColor = privateBackgroundBuddyCol();
+
 
             gEl("publishButID").style.borderWidth = "1px";
             gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
@@ -402,10 +419,10 @@
 
 
         if (status === 'temp' && selected === 'true' && user === 'self') {
-            liEl.style.borderStyle = "solid";
-            liEl.style.borderColor = "rgb(180,180,180)";
-            liEl.style.borderWidth = "4px";
-            liEl.style.backgroundColor = privateBackgroundSelfCol();
+           //liEl.style.borderStyle = "solid";
+            //liEl.style.borderColor = "rgb(180,180,180)";
+           // liEl.style.borderWidth = "4px";
+            //liEl.style.backgroundColor = privateBackgroundSelfCol();
             window.publishButDisabled = true;
             //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
             gEl("publishButID").style.borderWidth = "1px";
@@ -413,10 +430,12 @@
         }
 
          if (status === 'temp' && selected === 'true' && user === 'buddy') {
-            liEl.style.borderStyle = "solid";
-            liEl.style.borderColor = "rgb(180,180,180)";
-            liEl.style.borderWidth = "4px";
-            liEl.style.backgroundColor = privateBackgroundBuddyCol();
+            //liEl.style.borderStyle = "solid";
+            //liEl.style.borderColor = "rgb(180,180,180)";
+            //liEl.style.borderWidth = "4px";
+            //liEl.style.backgroundColor = privateBackgroundBuddyCol();
+
+
             window.publishButDisabled = true;
             //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
             gEl("publishButID").style.borderWidth = "1px";
@@ -426,9 +445,10 @@
         //STATUS = SUGGESTED -------------------------------------------------------------------------
 
         if ((status === 'suggested' && user === 'self') && selected === 'true') {
-            liEl.style.borderColor = "rgb(100,100,255)";
-            liEl.style.borderStyle = "solid";
-            liEl.style.borderWidth = "4px";
+           //liEl.style.borderColor = "rgb(100,100,255)";
+           // liEl.style.borderStyle = "solid";
+           // liEl.style.borderWidth = "4px";
+
             window.publishButDisabled = true;
             //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
             gEl("publishButID").style.borderWidth = "1px";
@@ -436,10 +456,11 @@
         }
 
         if ((status === 'suggested' && user === 'buddy') && selected === 'true') {
-            liEl.style.borderColor = "rgb(255,215,0)";
-            liEl.style.borderStyle = "solid";
-            liEl.style.borderWidth = "4px";
+          //  liEl.style.borderColor = "rgb(255,215,0)";
+           // liEl.style.borderStyle = "solid";
+           // liEl.style.borderWidth = "4px";
             // bit naughty but going to enable a button here
+
             window.publishButDisabled = false;
             gEl("publishButID").style.borderWidth = "2px";
             gEl("publishButID").style.borderColor = publishButStyleEnabledColor;
@@ -449,9 +470,10 @@
 
 
         if ((status === 'suggested' && user === 'self') && selected === 'false') {
-            liEl.style.borderColor = "rgb(255,0,0)";
-            liEl.style.borderStyle = "dotted";
-            liEl.style.borderWidth = "2px";
+           // liEl.style.borderColor = "rgb(255,0,0)";
+            //liEl.style.borderStyle = "dotted";
+            //liEl.style.borderWidth = "2px";
+
             window.publishButDisabled = true;
             //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
             gEl("publishButID").style.borderWidth = "1px";
@@ -459,9 +481,11 @@
         }
 
         if ((status === 'suggested' && user === 'buddy') && selected === 'false') {
-            liEl.style.borderColor = "rgb(255,215,215)";
-            liEl.style.borderStyle = "dotted";
-            liEl.style.borderWidth = "2px";
+           // liEl.style.borderColor = "rgb(255,215,215)";
+            //liEl.style.borderStyle = "dotted";
+            //liEl.style.borderWidth = "2px";
+
+
             window.publishButDisabled = true;
             // gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
             gEl("publishButID").style.borderWidth = "1px";
@@ -473,21 +497,23 @@
 
 
         if ((status === 'help' && user === 'self') && selected === 'false') {
-            liEl.style.borderColor = "rgb(215,215,215)";
-            liEl.style.borderStyle = "dotted";
-            liEl.style.borderWidth = "2px";
+            //liEl.style.borderColor = "rgb(215,215,215)";
+           // liEl.style.borderStyle = "dotted";
+           // liEl.style.borderWidth = "2px";
+
             window.publishButDisabled = true;
             //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
             gEl("publishButID").style.borderWidth = "1px";
             gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
-            liEl.style.backgroundColor = "rgb(255,255,255)";
+            //liEl.style.backgroundColor = "rgb(255,255,255)";
         }
 
         if (status === 'help' && selected === 'true') {
-            liEl.style.borderStyle = "solid";
-            liEl.style.borderColor = "rgb(180,180,180)";
-            liEl.style.borderWidth = "4px";
-            liEl.style.backgroundColor = "rgb(255,255,255)";
+           // liEl.style.borderStyle = "solid";
+           // liEl.style.borderColor = "rgb(180,180,180)";
+            //liEl.style.borderWidth = "4px";
+            //liEl.style.backgroundColor = "rgb(255,255,255)";
+
             window.publishButDisabled = true;
             //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
             gEl("publishButID").style.borderWidth = "1px";
