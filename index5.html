@@ -179,58 +179,41 @@
 
 
     socket.on('chat message', function (msg) {
-
+// some preparation to add a new list item by generating it a new id
         let privateList = gEl("privateListID");
         let items = privateList.getElementsByTagName("li");
         let lenList = items.length;
         let newIDNumber = lenList + 1;
         let newID = "listItemID" + newIDNumber;
-
+// we will make the new list item selected but first, deselect the previous selected item
         if (window.selectedListId) {
             let oldListEl = gEl(window.selectedListId);
             oldListEl.setAttribute("selected", "false");
             setListElementStyle(oldListEl);
-            /*
-            oldListEl.style.borderStyle = "dotted";
-            oldListEl.style.borderColor = "rgb(196,196,196)";
-            oldListEl.style.borderWidth = "1px";
-            */
-
         }
+ // now update our global with the id of the new item
         window.selectedListId = newID;
-
-
+// now actually create the new item and set its attributes
         let aListEl = document.createElement('li');
         aListEl.id = newID;
-
         aListEl.setAttribute('user', msg.user);
         aListEl.setAttribute('status', msg.status);
-        // alert(aListEl.getAttribute('status'));
         aListEl.setAttribute('selected', 'false');
-
-
         aListEl.innerHTML = msg.message;// show(msg.status);
         aListEl.addEventListener('dblclick', listClick);
         privateList.insertBefore(aListEl, privateList.childNodes[0]);
-
         if (msg.status === 'suggested') {
-
             aListEl.setAttribute("status", "suggested");
-            if (window.suggestedId) {
+            //in this version only one item can be marked as suggested for publication at any one time so
+            if (window.suggestedId) {//set any previous suggestion to not suggested ie status: 'temp'
                 gEl(window.suggestedId).setAttribute('status', 'temp)')
-
                 setListElementStyle(gEl(window.suggestedId));
             }
             window.suggestedId = aListEl.id;
-
-
         }
-        ;
 
-        //alert("enter list style soon");
-
+        // finally put our new item as selected.
         aListEl.setAttribute("selected", 'true');
-
         setListElementStyle(aListEl);
 
     });//end socket on chat message -------------------------------------------------------------------------------
