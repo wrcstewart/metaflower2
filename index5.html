@@ -140,7 +140,7 @@
 
         setStyle("publicListID", "1px", "600px", "501px", "199px", "rgb(190,255,190)");
 
-        setStyle("outer", "1px", "600px", "235px", "250px", privateBackgroundSelfCol());
+        setStyle("outer", "1px", "600px", "235px", "250px", "rgb(160,240,255)");
 
         gEl("privateListID").style.overflow = "scroll";
         gEl("test").style.overflow = "scroll";
@@ -214,6 +214,7 @@
 
         // finally put our new item as selected.
         aListEl.setAttribute("selected", 'true');
+        setButtonsFrom(aListEl);
         setListElementStyle(aListEl);
 
     });//end socket on chat message -------------------------------------------------------------------------------
@@ -236,6 +237,7 @@
         let newSelectedEl = gEl(clickedID);
         newSelectedEl.setAttribute("selected", "true");
         setListElementStyle(newSelectedEl);
+        setButtonsFrom(newSelectedEl)
 // currently, selecting i.e. double click, inserts the content back for editing
         doCopyToEdit();
 
@@ -370,6 +372,7 @@
 
          liEl.style.borderColor = "rgb(128,128,128)";
 
+         /*
 // -------------------------- more complicated cases below -------------
 
 // STATUS = TEMP------------------------------------------------------------------------------------------------
@@ -406,6 +409,7 @@
             //liEl.style.borderColor = "rgb(180,180,180)";
            // liEl.style.borderWidth = "4px";
             //liEl.style.backgroundColor = privateBackgroundSelfCol();
+
             window.publishButDisabled = true;
             //gEl("publishButID").style.backgroundColor = publishButStyleDisabledColor;
             gEl("publishButID").style.borderWidth = "1px";
@@ -506,7 +510,7 @@
 
 
         gEl("publishButID").disabled = window.publishButDisabled;
-
+*/
     }
 
     //utility functions
@@ -518,21 +522,47 @@
         return (document.getElementById(id))
     }
 
-    function privateBackgroundSelfCol() {
-        return ("rgb(160,240,255)")
-    }
 
-    function privateBackgroundBuddyCol() {
-        return ("rgb(255,255,220)")
-    }
+function setButtonsFrom(liEl){
+        // uses the attributes of the latest listElement to set the state of the system buttons.
 
-    function selfTextCol() {
-        return ("rgb(0,0,0)")
-    }
 
-    function buddyTextCol() {
-        return ("rgb(0,0,0)")
-    }
+
+    let publishButStyleEnabledColor = "rgb(128,128,128)";
+        let publishButStyleDisabledColor = "rgb(200,200,200)"
+
+
+        let user = liEl.getAttribute("user");
+        let status = liEl.getAttribute("status")
+        let selected = liEl.getAttribute("selected");
+
+        if ((status === 'suggested' && user === 'buddy') && selected === 'true') {
+
+            window.publishButDisabled = false;
+
+            gEl("publishButID").style.borderWidth = "2px";
+            gEl("publishButID").style.borderColor = publishButStyleEnabledColor;
+
+        } else {
+
+          window.publishButDisabled = true;
+
+            gEl("publishButID").style.borderWidth = "1px";
+            gEl("publishButID").style.borderColor = publishButStyleDisabledColor;
+        }
+
+        gEl("publishButID").disabled = window.publishButDisabled;
+
+         if ((status === 'suggested' && user === 'buddy') && selected === 'true') alert("you are about to receive " +
+             "a suggestion to publish a piece of conversation - either agree, or return an edit of the item, or just continue and chat about it");
+
+
+}
+
+
+
+
+
 
 
 </script>
