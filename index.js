@@ -1,7 +1,8 @@
 
-//mongoose.connect(' mongodb+srv://wrcstewart:Ginger>1951@cluster0.ewegv.mongodb.net/my_database', {useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true });
+
 const express = require('express');
 const path = require('path');
+
 
 
 const app = express();
@@ -23,14 +24,38 @@ const assert = require('assert');
 const dbName = 'my_database2';
 const client = new MongoClient(url, {useNewUrlParser: true});
 
-client.connect(function(err) {
-    assert.equal(null, err);
-    console.log("Connected successfully to server");
+async function doIt() {
 
-    const db = client.db(dbName);
-    db.collection('Petals').insertOne({
+    await client.connect(function (err) {
+        assert.equal(null, err);
+        console.log("Connected successfully to server");
 
-     title:'Better Post!',
+        global.db2 = client.db(dbName);
+        global.db2.collection('Petals').insertOne({
+
+            title: 'Better PostL1',
+
+            slug: 'a-better-post',
+
+            published: true,
+
+            author: 'Ado Kukic',
+
+            content: 'This is an even better post',
+
+            tags: ['featured'],
+
+        })
+    });
+}
+
+
+doIt();
+
+
+global.db2.collection('Petals').insertOne({
+
+     title:'Better PostL2',
 
      slug:'a-better-post',
 
@@ -43,13 +68,6 @@ client.connect(function(err) {
      tags: ['featured'],
 
 })
-
-
-
-
-});
-
-
 
 
 
@@ -83,9 +101,32 @@ io.on('connection', (socket) => {
 io.on('connection', (socket) => {
     socket.on('chat message', (msg) => {
 
+global.db2.collection('Petals').insertOne({
+
+     title:'Better PostL3',
+
+     slug:'a-better-post',
+
+     published: true,
+
+     author: 'Ado Kukic',
+
+     content: 'This is an even better post',
+
+     tags: ['featured'],
+
+})
+
+
+
+
+
+
+
         let message = msg.message;
         let status = msg.status;
         console.log(status);
+        //console.log(db1);
 
         io.to(socket.id).emit('chat message',{user:"self",status:status,message:message});
        io.to(chatPairs[socket.id]).emit('chat message',{user:"buddy",status:status, message:message});
