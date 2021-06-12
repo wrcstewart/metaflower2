@@ -14,6 +14,8 @@ if (port == null || port == "") {
 const server = app.listen(port, ()=>{
     console.log('App listening on 4000')
 })
+
+const io = require('socket.io')(server);
 const url = 'mongodb+srv://wrcstewart:Ginger>1951@cluster0.ewegv.mongodb.net/my_database';
 
 
@@ -25,260 +27,281 @@ const dbName = 'my_database2';
 const client = new MongoClient(url, {useNewUrlParser: true});
 
 async function doIt() {
+    let result1;
+    //await client.connect(function (err) {
 
-    await client.connect(function (err) {
-        assert.equal(null, err);
-        console.log("Connected successfully to server");
+    let ddd = new Date();
+    let ms1 = ddd.getTime();
 
-        global.db2 = client.db(dbName);
-        global.db2.collection('Petals').insertOne({
+    await client.connect();
 
-            title: 'Better PostL1',
+    let dddd = new Date();
+    let ms2 = dddd.getTime();
+    console.log("connect time in ms")
+    console.log(ms2-ms1);
 
-            slug: 'a-better-post',
 
-            published: true,
 
-            author: 'Ado Kukic',
+    // assert.equal(null, err);
 
-            content: 'This is an even better post',
 
-            tags: ['featured'],
+    console.log("Connected successfully to server");
 
-        })
+    global.db2 = client.db(dbName);
+
+ let myDoc = {
+
+        title: 'Better PostQ2',
+
+        slug: 'a-better-post',
+
+        published: true,
+
+        author: 'Ado Kukic',
+
+        content: 'This is an even better post',
+
+        tags: ['featured'],
+    } ;
+
+    await global.db2.collection('Petals').insertOne
+        (myDoc,async function(err,docs){await console.log("myDocWasHere")});
+
+    await console.log((myDoc._id).toString());
+
+
+
+    result1 = await global.db2.collection('Petals').findOne({ "_id": myDoc._id });
+    console.log(result1);
+
+
+
+     global.db2.collection('Petals').insertOne({
+
+        title: 'Better PostP200',
+
+        slug: 'a-better-post',
+
+        published: true,
+
+        author: 'Ado Kukic',
+
+        content: 'This is an even better post',
+
+        tags: ['featured'],
+
     });
-}
-
-
-doIt();
-
-
-global.db2.collection('Petals').insertOne({
-
-     title:'Better PostL2',
-
-     slug:'a-better-post',
-
-     published: true,
-
-     author: 'Ado Kukic',
-
-     content: 'This is an even better post',
-
-     tags: ['featured'],
-
-})
 
 
 
 
 
 
-const io = require('socket.io')(server);
 
-app.get('/', (req,res)=>{
 
-    res.sendFile(path.resolve(__dirname,'index5.html'))
 
-})
+    //const io = require('socket.io')(server);
 
-let usersObj = {};
-let invUsersObj = {};
-let testUser = "user1";
-let chatPairs ={};
-console.log(usersObj[testUser]);
-getCompactDateTime();
+    app.get('/', (req, res) => {
 
-io.on('connection', (socket)=>{console.log("socketID "+socket.id)});
+        res.sendFile(path.resolve(__dirname, 'index5.html'))
+
+    })
+
+    let usersObj = {};
+    let invUsersObj = {};
+    let testUser = "user1";
+    let chatPairs = {};
+    console.log(usersObj[testUser]);
+    getCompactDateTime();
+
+    io.on('connection', (socket) => {
+        console.log("socketID " + socket.id)
+    });
 //io.on('connection', (socket)=>{console.log( socket.id    )});
-/*
-io.on('connection', (socket) => {
-    socket.on('chat message', (msg) => {
-        console.log('message: ' + msg);
+    /*
+    io.on('connection', (socket) => {
+        socket.on('chat message', (msg) => {
+            console.log('message: ' + msg);
+        });
     });
-});
-*/
-io.on('connection', (socket) => {
-    socket.on('chat message', (msg) => {
+    */
+    io.on('connection', (socket) => {
+        socket.on('chat message', (msg) => {
+let ddddd = new Date();
+    let ms3 = ddddd.getTime();
+             global.db2.collection('Petals').insertOne({
 
-global.db2.collection('Petals').insertOne({
+                title: 'Better PostP3',
 
-     title:'Better PostL3',
+                slug: 'a-better-post',
 
-     slug:'a-better-post',
+                published: true,
 
-     published: true,
+                author: 'Ado Kukic',
 
-     author: 'Ado Kukic',
+                content: 'This is an even better post',
 
-     content: 'This is an even better post',
+                tags: ['featured'],
 
-     tags: ['featured'],
+            })
+let dddddd = new Date();
+    let ms4 = dddddd.getTime();
 
-})
+    console.log("insert time in ms")
+    console.log(ms4-ms3);
 
+            let message = msg.message;
+            let status = msg.status;
+            console.log(status);
+            //console.log(db1);
 
-
-
-
-
-
-        let message = msg.message;
-        let status = msg.status;
-        console.log(status);
-        //console.log(db1);
-
-        io.to(socket.id).emit('chat message',{user:"self",status:status,message:message});
-       io.to(chatPairs[socket.id]).emit('chat message',{user:"buddy",status:status, message:message});
-        //io.emit('chat message', msg);
-        //console.log(msg);
-        //console.log(socket.id);
-    });
-    socket.on('publish', (msg) => {
-
+            io.to(socket.id).emit('chat message', {user: "self", status: status, message: message});
+            io.to(chatPairs[socket.id]).emit('chat message', {user: "buddy", status: status, message: message});
+            //io.emit('chat message', msg);
+            //console.log(msg);
+            //console.log(socket.id);
+        });
+        socket.on('publish', (msg) => {
 
 
+            // do all the database stuff here
+            msg = constructInfoBar(socket.id) + "<br>" + msg;
 
 
+            let status = 'publish';
+            // console.log(status);
 
-        // do all the database stuff here
-        msg = constructInfoBar(socket.id) + "<br>" + msg;
-
-
-        let status = 'publish';
-       // console.log(status);
-
-        io.to(socket.id).emit('chat message',{user:"self",status:status,message:msg});
-       io.to(chatPairs[socket.id]).emit('chat message',{user:"buddy",status:status, message:msg});
-        //io.emit('chat message', msg);
-        //console.log(msg);
-        //console.log(socket.id);
-        console.log(constructInfoBar(socket.id))
+            io.to(socket.id).emit('chat message', {user: "self", status: status, message: msg});
+            io.to(chatPairs[socket.id]).emit('chat message', {user: "buddy", status: status, message: msg});
+            //io.emit('chat message', msg);
+            //console.log(msg);
+            //console.log(socket.id);
+            console.log(constructInfoBar(socket.id))
 
 
-
-    });
-
+        });
 
 
-    socket.on('help', (msg) => {
-        let helpMessage ="";
-        if( msg === 'explain panes'){
+        socket.on('help', (msg) => {
+            let helpMessage = "";
+            if (msg === 'explain panes') {
 
-            helpMessage = "Explanation about the panes";
-        }
-        let status = 'help';
-        console.log(msg);
-        io.to(socket.id).emit('chat message',{user:"self",status:status,message:helpMessage});
+                helpMessage = "Explanation about the panes";
+            }
+            let status = 'help';
+            console.log(msg);
+            io.to(socket.id).emit('chat message', {user: "self", status: status, message: helpMessage});
+        });
+
+
     });
 
+    io.on('connection', (socket) => {
+        socket.on('client data', (msg) => {
+            //io.emit('chat message', msg);
+            console.log(msg);
+            addUserToUserObj(msg);
+            /*
+           io.to(msg.socketID).emit('chat message',"private message from yourself");
+            io.to(chatPairs[msg.socketID]).emit('chat message',"private message from chat buddy");
+            */
 
+            //console.log(socket.id);
+        });
+    });//client data
 
-});
+    function addUserToUserObj(msg) {
 
-io.on('connection', (socket) => {
-    socket.on('client data', (msg) => {
-        //io.emit('chat message', msg);
-        console.log(msg);
-        addUserToUserObj(msg);
-        /*
-       io.to(msg.socketID).emit('chat message',"private message from yourself");
-        io.to(chatPairs[msg.socketID]).emit('chat message',"private message from chat buddy");
-        */
+        usersObj[msg.user] = msg.socketID;
+        invUsersObj[msg.socketID] = msg.user;
 
-        //console.log(socket.id);
-    });
-});//client data
+        console.log(usersObj);
+        console.log(invUsersObj);
 
-function addUserToUserObj(msg){
+        if (msg.user == "user2") testInitialiseChatPairs();
 
-usersObj[msg.user] = msg.socketID;
-invUsersObj[msg.socketID] = msg.user;
+    }
 
-console.log(usersObj);
-console.log(invUsersObj);
-
-if(msg.user == "user2" ) testInitialiseChatPairs();
-
-}
-
-function testInitialiseChatPairs(){
+    function testInitialiseChatPairs() {
 // assumes as an example user1 and user 2 have agreed a chat.
 
-chatPairs[usersObj["user1"]] = usersObj["user2"];//should be socket ids
-chatPairs[usersObj["user2"]] = usersObj["user1"];
-console.log(chatPairs)
+        chatPairs[usersObj["user1"]] = usersObj["user2"];//should be socket ids
+        chatPairs[usersObj["user2"]] = usersObj["user1"];
+        console.log(chatPairs)
 
-}
+    }
 
-function getReadableDateTime(){
-    let date_ob = new Date();
+    function getReadableDateTime() {
+        let date_ob = new Date();
 
 // current date
 // adjust 0 before single digit date
-let date = ("0" + date_ob.getUTCDate()).slice(-2);
+        let date = ("0" + date_ob.getUTCDate()).slice(-2);
 
 // current month
-let month = ("0" + (date_ob.getUTCMonth() + 1)).slice(-2);
+        let month = ("0" + (date_ob.getUTCMonth() + 1)).slice(-2);
 
 // current year
-let year = date_ob.getUTCFullYear();
+        let year = date_ob.getUTCFullYear();
 
 // current hours
-let hours = date_ob.getUTCHours();
+        let hours = date_ob.getUTCHours();
 
 // current minutes
-let minutes = date_ob.getUTCMinutes();
+        let minutes = date_ob.getUTCMinutes();
 
 // current seconds
-let seconds = date_ob.getUTCSeconds();
+        let seconds = date_ob.getUTCSeconds();
 
 // prints date in YYYY-MM-DD format
 //console.log(year + "-" + month + "-" + date);
 
 // prints date & time in YYYY-MM-DD HH:MM:SS format
-return(year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds +" UTC");
+        return (year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds + " UTC");
 
-}
-function getCompactDateTime(){
-    let date_ob = new Date();
+    }
+
+    function getCompactDateTime() {
+        let date_ob = new Date();
 
 // current date
 // adjust 0 before single digit date
-let date = ("0" + date_ob.getUTCDate()).slice(-2);
+        let date = ("0" + date_ob.getUTCDate()).slice(-2);
 
 // current month
-let month = ("0" + (date_ob.getUTCMonth() + 1)).slice(-2);
+        let month = ("0" + (date_ob.getUTCMonth() + 1)).slice(-2);
 
 // current year
-let year = date_ob.getUTCFullYear();
+        let year = date_ob.getUTCFullYear();
 
 // current hours
-let hours = date_ob.getUTCHours();
+        let hours = date_ob.getUTCHours();
 
 // current minutes
-let minutes = date_ob.getUTCMinutes();
+        let minutes = date_ob.getUTCMinutes();
 
 // current seconds
-let seconds = date_ob.getUTCSeconds();
+        let seconds = date_ob.getUTCSeconds();
 
 // prints date in YYYY-MM-DD format
 //console.log(year + "-" + month + "-" + date);
 
 // prints date & time in YYYY-MM-DD HH:MM:SS format
-return("_"+year +"_" + month +"_" + date + "___" + hours + "_" + minutes + "_" + seconds +"_UTC");
+        return ("_" + year + "_" + month + "_" + date + "___" + hours + "_" + minutes + "_" + seconds + "_UTC");
 
+    }
+
+    function constructInfoBar(sockId) {
+        let outString;
+        let readableDate = getReadableDateTime();
+        let userSelf = invUsersObj[sockId]
+        //console.log(userSelf)
+        let clientId = chatPairs[sockId];
+        let userBuddy = invUsersObj[clientId];
+        //console.log(userBuddy);
+        let outName = userBuddy + "_" + userSelf;
+        return (outName + getCompactDateTime());
+    }
 }
-
-function constructInfoBar(sockId){
-    let outString;
-    let readableDate = getReadableDateTime();
-    let userSelf = invUsersObj[sockId]
-    //console.log(userSelf)
-    let clientId =chatPairs[sockId];
-    let userBuddy = invUsersObj[clientId];
-    //console.log(userBuddy);
-    let outName = userBuddy + "_" + userSelf;
-    return(outName + getCompactDateTime());
-}
-
+doIt()
