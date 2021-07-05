@@ -9,10 +9,10 @@ const app = express();
 
 let port = process.env.PORT;
 if (port == null || port == "") {
-    port = 4000;
+    port = 3000;
 }
 const server = app.listen(port, ()=>{
-    console.log('App listening on 4000')
+    console.log('App listening on 3000')
 })
 
 const io = require('socket.io')(server);
@@ -24,7 +24,7 @@ const MongoClient = require('mongodb').MongoClient;
 
 const assert = require('assert');
 const dbName = 'my_database2';
-const client = new MongoClient(url, {useNewUrlParser: true});
+const client = new MongoClient(url, {useNewUrlParser: true ,useUnifiedTopology: true });
 
 async function doIt() {
     let result1;
@@ -47,7 +47,7 @@ async function doIt() {
 
     console.log("Connected successfully to server");
 
-    global.db2 = client.db(dbName);
+    const globaldb2 = client.db(dbName);
 
  let myDoc = {
 
@@ -64,19 +64,20 @@ async function doIt() {
         tags: ['featured'],
     } ;
 
-    await global.db2.collection('Petals').insertOne
-        (myDoc,async function(err,docs){await console.log("myDocWasHere")});
+    await globaldb2.collection('Petals').insertOne
+        (myDoc,async function(err,docs){/*await console.log("my test doc inserted")*/});
 
-    await console.log((myDoc._id).toString());
+    //await console.log((myDoc._id).toString());
 
 
 
-    result1 = await global.db2.collection('Petals').findOne({ "_id": myDoc._id });
+    result1 = await globaldb2.collection('Petals').findOne({ "_id": myDoc._id });
+    console.log("retrieved test doc using its id");
     console.log(result1);
 
 
 
-     global.db2.collection('Petals').insertOne({
+     await globaldb2.collection('Petals').insertOne({
 
         title: 'Better PostP200',
 
@@ -104,7 +105,7 @@ async function doIt() {
 
     app.get('/', (req, res) => {
 
-        res.sendFile(path.resolve(__dirname, 'index5.html'))
+        res.sendFile(path.resolve(__dirname, 'index6.html'))
 
     })
 
@@ -118,6 +119,9 @@ async function doIt() {
     io.on('connection', (socket) => {
         console.log("socketID " + socket.id)
     });
+
+
+
 //io.on('connection', (socket)=>{console.log( socket.id    )});
     /*
     io.on('connection', (socket) => {
@@ -130,7 +134,7 @@ async function doIt() {
         socket.on('chat message', (msg) => {
 let ddddd = new Date();
     let ms3 = ddddd.getTime();
-             global.db2.collection('Petals').insertOne({
+             globaldb2.collection('Petals').insertOne({
 
                 title: 'Better PostP3',
 
@@ -162,11 +166,22 @@ let dddddd = new Date();
             //console.log(msg);
             //console.log(socket.id);
         });
-        socket.on('publish', (msg) => {
+        socket.on('publish', async (msg) => {
 
 
             // do all the database stuff here
             msg = constructInfoBar(socket.id) + "<br>" + msg;
+            let timeStored = new Date().getTime();
+            let expiry = 0;
+            let contentType = 'standard';
+            let author1 = invUsersObj[socket.id]
+            //console.log(userSelf)
+            let clientId = chatPairs[socket.id];
+            let author2 = invUsersObj[clientId];
+            let doc= {author1:author1,author2:author2,
+                timeStored:timeStored,expiry:expiry,contentType:contentType,content:msg};
+             await globaldb2.collection('Petals').insertOne
+             (doc,async function(err,docs){/*await console.log("my test doc inserted")*/});
 
 
             let status = 'publish';
