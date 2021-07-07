@@ -48,7 +48,7 @@ async function doIt() {
     console.log("Connected successfully to server");
 
     const globaldb2 = client.db(dbName);
-
+/*
  let myDoc = {
 
         title: 'Better PostQ2',
@@ -63,20 +63,20 @@ async function doIt() {
 
         tags: ['featured'],
     } ;
-
-    await globaldb2.collection('Petals').insertOne
-        (myDoc,async function(err,docs){/*await console.log("my test doc inserted")*/});
+*/
+   // await globaldb2.collection('Petals').insertOne
+      //  (myDoc,async function(err,docs){/*await console.log("my test doc inserted")*/});
 
     //await console.log((myDoc._id).toString());
 
 
 
-    result1 = await globaldb2.collection('Petals').findOne({ "_id": myDoc._id });
-    console.log("retrieved test doc using its id");
-    console.log(result1);
+    //result1 = await globaldb2.collection('Petals').findOne({ "_id": myDoc._id });
+    //console.log("retrieved test doc using its id");
+    //console.log(result1);
 
 
-
+/*
      await globaldb2.collection('Petals').insertOne({
 
         title: 'Better PostP200',
@@ -92,7 +92,7 @@ async function doIt() {
         tags: ['featured'],
 
     });
-
+*/
 
 
 
@@ -132,6 +132,7 @@ async function doIt() {
     */
     io.on('connection', (socket) => {
         socket.on('chat message', (msg) => {
+            /*
 let ddddd = new Date();
     let ms3 = ddddd.getTime();
              globaldb2.collection('Petals').insertOne({
@@ -154,7 +155,7 @@ let dddddd = new Date();
 
     console.log("insert time in ms")
     console.log(ms4-ms3);
-
+*/
             let message = msg.message;
             let status = msg.status;
             console.log(status);
@@ -166,6 +167,9 @@ let dddddd = new Date();
             //console.log(msg);
             //console.log(socket.id);
         });
+
+
+
         socket.on('publish', async (msg) => {
 
 
