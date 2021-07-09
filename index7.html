@@ -274,6 +274,37 @@
 
     });//end socket on chat message -------------------------------------------------------------------------------
 
+    socket.on('pubupdateresponse', function(response){
+
+        let nDocs = response.responsearray.length;
+        show( nDocs);//may be undefined if no content field found by server
+
+        // find the pub list and delete all child list nodes.
+        let liC = gEl("publicListId");
+       // updateList(liC,response.responsearray);
+
+
+
+    });
+
+    function updateList(lEl,htmlArray) {
+        removeListElements(lEl);
+        let len = htmlArray.length;
+        for(let i=0;i<len;i++){
+
+            let newPubID = "pubListItemID" + (i+1);
+
+         let aPubListEl = document.createElement('li');
+            aPubListEl.id = newPubID;
+
+
+            aPubListEl.innerHTML = htmlArray[i];
+            lEl.insertBefore(aPubListEl, lEl.childNodes[0]);
+
+
+        }
+    }
+
 
     function listClick(e) {
         //if the user doubles clicks a list item - copy to edit pane and show selected.
@@ -415,7 +446,11 @@
         }
     }
 
-
+function removeListElements(listContainerEl){
+    while (listContainerEl.hasChildNodes()) {
+        listContainerEl.removeChild(listContainerEl.firstChild);
+    }
+}
     function setListElementStyle(liEl) {
 
         let user = liEl.getAttribute("user");
