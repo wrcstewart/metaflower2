@@ -27,14 +27,12 @@ const dbName = 'my_database2';
 const client = new MongoClient(url, {useNewUrlParser: true ,useUnifiedTopology: true });
 
 async function doIt() {
+    //connection to db stuff
     let result1;
     //await client.connect(function (err) {
-
     let ddd = new Date();
     let ms1 = ddd.getTime();
-
     await client.connect();
-
     let dddd = new Date();
     let ms2 = dddd.getTime();
     console.log("connect time in ms")
@@ -48,64 +46,24 @@ async function doIt() {
     console.log("Connected successfully to server");
 
     const globaldb2 = client.db(dbName);
-/*
- let myDoc = {
 
-        title: 'Better PostQ2',
 
-        slug: 'a-better-post',
 
-        published: true,
 
-        author: 'Ado Kukic',
-
-        content: 'This is an even better post',
-
-        tags: ['featured'],
-    } ;
-*/
    // await globaldb2.collection('Petals').insertOne
       //  (myDoc,async function(err,docs){/*await console.log("my test doc inserted")*/});
-
-    //await console.log((myDoc._id).toString());
-
-
-
+//await console.log((myDoc._id).toString());
     //result1 = await globaldb2.collection('Petals').findOne({ "_id": myDoc._id });
     //console.log("retrieved test doc using its id");
     //console.log(result1);
-
-
-/*
-     await globaldb2.collection('Petals').insertOne({
-
-        title: 'Better PostP200',
-
-        slug: 'a-better-post',
-
-        published: true,
-
-        author: 'Ado Kukic',
-
-        content: 'This is an even better post',
-
-        tags: ['featured'],
-
-    });
-*/
+//
+//const io = require('socket.io')(server);
 
 
 
+app.get('/', (req, res) => {
 
-
-
-
-
-    //const io = require('socket.io')(server);
-
-    app.get('/', (req, res) => {
-
-        res.sendFile(path.resolve(__dirname, 'index6.html'))
+        res.sendFile(path.resolve(__dirname, 'index7.html'))
 
     })
 
@@ -122,40 +80,10 @@ async function doIt() {
 
 
 
-//io.on('connection', (socket)=>{console.log( socket.id    )});
-    /*
+
     io.on('connection', (socket) => {
         socket.on('chat message', (msg) => {
-            console.log('message: ' + msg);
-        });
-    });
-    */
-    io.on('connection', (socket) => {
-        socket.on('chat message', (msg) => {
-            /*
-let ddddd = new Date();
-    let ms3 = ddddd.getTime();
-             globaldb2.collection('Petals').insertOne({
 
-                title: 'Better PostP3',
-
-                slug: 'a-better-post',
-
-                published: true,
-
-                author: 'Ado Kukic',
-
-                content: 'This is an even better post',
-
-                tags: ['featured'],
-
-            })
-let dddddd = new Date();
-    let ms4 = dddddd.getTime();
-
-    console.log("insert time in ms")
-    console.log(ms4-ms3);
-*/
             let message = msg.message;
             let status = msg.status;
             console.log(status);
@@ -182,10 +110,16 @@ let dddddd = new Date();
             //console.log(userSelf)
             let clientId = chatPairs[socket.id];
             let author2 = invUsersObj[clientId];
+
+
             let doc= {author1:author1,author2:author2,
-                timeStored:timeStored,expiry:expiry,contentType:contentType,content:msg};
-             await globaldb2.collection('Petals').insertOne
-             (doc,async function(err,docs){/*await console.log("my test doc inserted")*/});
+                timeStored:timeStored,expiry:0,contentType:contentType,content:msg};
+
+
+                await globaldb2.collection('Petals').insertOne
+                (doc, async function (err, docs) {await console.log(i)
+                });
+
 
 
             let status = 'publish';
@@ -200,6 +134,20 @@ let dddddd = new Date();
 
 
         });
+
+        socket.on('publistupdate', async function(pubListQueryObj){
+
+        let nRecs = pubListQueryObj.nRecs;
+        let tempArray = new Array();
+        //get the records and send update to both parties. interleaving?
+        const cursor = globaldb2.collection('Petals').find({});
+        await cursor.forEach(doc => tempArray.push(doc.content)); //will need to be modified
+
+        io.to(socket.id).emit('receivepubupdate', {responsearray: tempArray});
+            io.to(chatPairs[socket.id]).emit('receivepubupdate',{responsearray: tempArray} );
+
+
+        })
 
 
         socket.on('help', (msg) => {
