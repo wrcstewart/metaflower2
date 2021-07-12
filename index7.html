@@ -138,6 +138,7 @@
     function setUpPage() {
 
         window.selectedListId = null;
+        window.selectedPubListId = null;
 
         gEl("publishButID").disabled = true;
 
@@ -217,6 +218,17 @@
 
          let aPubListEl = document.createElement('li');
             aPubListEl.id = newPubID;
+
+            //need to deselct old selected.
+
+              if (window.selectedPubListId) {
+                let oldPubListEl = gEl(window.selectedPubListId);
+                oldPubListEl.setAttribute("selected", "false");
+                setListElementStyle(oldPubListEl);
+            }
+
+            // now update our global with the id of the new item
+            window.selectedPubListId = newPubID;
             aPubListEl.setAttribute("selected", 'true');
 
             //aPubListEl.innerHTML ="test";
@@ -280,16 +292,18 @@
         show( nDocs);//may be undefined if no content field found by server
 
         // find the pub list and delete all child list nodes.
-        let liC = gEl("publicListId");
-       // updateList(liC,response.responsearray);
+        let liC = gEl("publicListID");//whoops
+       updateList(liC,response.responsearray);
 
 
 
     });
 
     function updateList(lEl,htmlArray) {
+        show('entering');
         removeListElements(lEl);
         let len = htmlArray.length;
+        show("done len array")
         for(let i=0;i<len;i++){
 
             let newPubID = "pubListItemID" + (i+1);
@@ -299,6 +313,14 @@
 
 
             aPubListEl.innerHTML = htmlArray[i];
+
+            aPubListEl.setAttribute('user', "two");
+            aPubListEl.setAttribute('status', "published");
+            aPubListEl.setAttribute('selected', 'false');
+
+            setListElementStyle(aPubListEl);
+
+
             lEl.insertBefore(aPubListEl, lEl.childNodes[0]);
 
 
@@ -307,7 +329,7 @@
 
 
     function listClick(e) {
-        //if the user doubles clicks a list item - copy to edit pane and show selected.
+        //if the user doubles clicks a list item  make it selected.
 
         //uses a global: window.selectedListId
 
@@ -324,9 +346,9 @@
         let newSelectedEl = gEl(clickedID);
         newSelectedEl.setAttribute("selected", "true");
         setListElementStyle(newSelectedEl);
-        setButtonsFrom(newSelectedEl)
+        //setButtonsFrom(newSelectedEl)
 // currently, selecting i.e. double click, inserts the content back for editing
-        doCopyToEdit();
+        //doCopyToEdit();
 
 // devel and debug stuff
         gEl("test").innerHTML = this.innerHTML;
@@ -482,9 +504,9 @@ function removeListElements(listContainerEl){
         }
 
         let tempBorderWidth = "1px";
-        let suggestedBorderWidth = "4px";
-        let publishedBorderWidth = "4px";
-        let helpBorderWidth = "2px";
+        let suggestedBorderWidth = "2px";
+        let publishedBorderWidth = "2px";
+        let helpBorderWidth = "1px";
 
         if (status === "temp") liEl.style.borderWidth = tempBorderWidth;
         if (status === "suggested") liEl.style.borderWidth = suggestedBorderWidth;
