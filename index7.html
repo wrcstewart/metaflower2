@@ -230,6 +230,7 @@
             // now update our global with the id of the new item
             window.selectedPubListId = newPubID;
             aPubListEl.setAttribute("selected", 'true');
+            aPubListEl.addEventListener('dblclick', pubListClick);
 
             //aPubListEl.innerHTML ="test";
             publicList.insertBefore(aPubListEl, publicList.childNodes[0]);
@@ -318,6 +319,11 @@
             aPubListEl.setAttribute('status', "published");
             aPubListEl.setAttribute('selected', 'false');
 
+            if(i === (len-1)) {
+                 aPubListEl.setAttribute('selected', 'true');
+                 window.selectedPubListId = aPubListEl.id;
+            }
+
             setListElementStyle(aPubListEl);
 
 
@@ -327,8 +333,8 @@
         }
     }
 
-
-    function listClick(e) {
+// next adjust pubListClick
+    function pubListClick(e) {
         //if the user doubles clicks a list item  make it selected.
 
         //uses a global: window.selectedListId
@@ -357,6 +363,39 @@
 // end of debug/devel stuff
 
     }//end list click --------------------------------------------------------------------------------------------
+
+     function listClick(e) {
+        //if the user doubles clicks a list item  make it selected.
+
+        //uses a global: window.selectedListId
+
+        var clickedID = this.id;
+
+// if there is an old selected list item then show deselected
+        if (window.selectedListId) {
+            let oldListEl = gEl(window.selectedListId);
+            oldListEl.setAttribute("selected", "false");
+            setListElementStyle(oldListEl);
+        }
+// and set up new selected list item
+        window.selectedListId = clickedID;
+        let newSelectedEl = gEl(clickedID);
+        newSelectedEl.setAttribute("selected", "true");
+        setListElementStyle(newSelectedEl);
+        //setButtonsFrom(newSelectedEl)
+// currently, selecting i.e. double click, inserts the content back for editing
+        //doCopyToEdit();
+
+// devel and debug stuff
+        gEl("test").innerHTML = this.innerHTML;
+        let testStuff = gEl("test").innerHTML;
+        gEl("test").innerHTML = testStuff + "<br>" + socket.id;
+// end of debug/devel stuff
+
+    }//end pubList click ----------------------
+
+
+
 
     function setStyle(elementId, left, width, top, height, bkColor) {
         let el = document.getElementById(elementId);
