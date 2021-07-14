@@ -24,6 +24,17 @@
             size: 18
         }
 
+        #buttonbar2 {
+            background-color: rgb(240, 240, 240);
+            position: absolute;
+            top: 490px;
+            width: 600px;
+            height: 25px;
+            left: 1px;
+            fonts-size: 18;
+            size: 18
+        }
+
         button {
             box-sizing: border-box;
             box-shadow: none;
@@ -110,6 +121,11 @@
     <button id="publishButID" style="width:120px" onclick="doPublish()">Agree Publish</button>
 </div>
 
+<div id="buttonbar2">
+    <button id="copyFromPub" style="width:50px" onclick="doCopyFromPubList()"> ⬆︎︎ </button>
+
+</div>
+
 <div id="tempButtons">
     <button id="setUser1ButID" style="width:50px" onclick="doSetUser1()">Set To User1</button>
     <button id="setUser2ButID" style="width:50px" onclick="doSetUser2()">Set To User2</button>
@@ -152,7 +168,7 @@
 
         setStyle("privateListID", "1px", "600px", "1px", "199px", "rgb(240,240,240");
 
-        setStyle("publicListContainerID", "1px", "600px", "500px", "200px", "rgb(190,255,190)");
+        setStyle("publicListContainerID", "1px", "600px", "520px", "220px", "rgb(190,255,190)");
 
 
         setStyle("publicListID", "1px", "600px", "1px", "199px", "rgb(190,255,190)");
@@ -323,6 +339,7 @@
                  aPubListEl.setAttribute('selected', 'true');
                  window.selectedPubListId = aPubListEl.id;
             }
+            aPubListEl.addEventListener('dblclick', pubListClick);
 
             setListElementStyle(aPubListEl);
 
@@ -337,18 +354,18 @@
     function pubListClick(e) {
         //if the user doubles clicks a list item  make it selected.
 
-        //uses a global: window.selectedListId
+        //uses a global: window.selectedPubListId
 
         var clickedID = this.id;
 
 // if there is an old selected list item then show deselected
-        if (window.selectedListId) {
-            let oldListEl = gEl(window.selectedListId);
+        if (window.selectedPubListId) {
+            let oldListEl = gEl(window.selectedPubListId);
             oldListEl.setAttribute("selected", "false");
             setListElementStyle(oldListEl);
         }
 // and set up new selected list item
-        window.selectedListId = clickedID;
+        window.selectedPubListId = clickedID;
         let newSelectedEl = gEl(clickedID);
         newSelectedEl.setAttribute("selected", "true");
         setListElementStyle(newSelectedEl);
@@ -362,7 +379,7 @@
         gEl("test").innerHTML = testStuff + "<br>" + socket.id;
 // end of debug/devel stuff
 
-    }//end list click --------------------------------------------------------------------------------------------
+    }//end pub list click --------------------------------------------------------------------------------------------
 
      function listClick(e) {
         //if the user doubles clicks a list item  make it selected.
@@ -394,7 +411,18 @@
 
     }//end pubList click ----------------------
 
+function doCopyFromPubList(){
 
+        //alert(window.selectedPubListId);
+        let elLiEl = gEl(window.selectedPubListId);
+
+        let tempString = elLiEl.innerHTML + $('#summernote').summernote('code');
+        $('#summernote').summernote('code', tempString);
+        gEl("publishButID").disabled =true;
+        window.publishButDisabled = true;
+        updatePublishBut();
+
+}
 
 
     function setStyle(elementId, left, width, top, height, bkColor) {
