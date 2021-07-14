@@ -117,7 +117,7 @@ app.get('/', (req, res) => {
 
 
                 await globaldb2.collection('Petals').insertOne
-                (doc, async function (err, docs) {await console.log(i)
+                (doc, async function (err, docs) {
                 });
 
 
@@ -139,14 +139,11 @@ app.get('/', (req, res) => {
 
         let nRecs = pubListQueryObj.nRecs;
         let tempArray = new Array();
-        //get the records and send update to both parties. interleaving?
+        //get the records and send update
         const cursor = globaldb2.collection('Petals').find({});
         await cursor.forEach(doc => tempArray.push(doc.content)); //will need to be modified
-
-        io.to(socket.id).emit('receivepubupdate', {responsearray: tempArray});
-            io.to(chatPairs[socket.id]).emit('receivepubupdate',{responsearray: tempArray} );
-
-
+            io.to(socket.id).emit('pubupdateresponse', {responsearray: tempArray});
+            io.to(chatPairs[socket.id]).emit('pubupdateresponse',{responsearray: tempArray} );
         })
 
 
