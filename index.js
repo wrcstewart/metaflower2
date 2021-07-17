@@ -63,7 +63,7 @@ async function doIt() {
 
 app.get('/', (req, res) => {
 
-        res.sendFile(path.resolve(__dirname, 'index7.html'))
+        res.sendFile(path.resolve(__dirname, 'index9.html'))
 
     })
 
@@ -102,7 +102,10 @@ app.get('/', (req, res) => {
 
 
             // do all the database stuff here
-            msg = constructInfoBar(socket.id) + "<br>" + msg;
+
+            let _id = constructInfoBar(socket.id);
+            msg = _id + "<br>" + msg;
+
             let timeStored = new Date().getTime();
             let expiry = 0;
             let contentType = 'standard';
