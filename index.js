@@ -103,8 +103,13 @@ app.get('/', (req, res) => {
 
             // do all the database stuff here
 
-            let _id = constructInfoBar(socket.id);
-            msg = _id + "<br>" + msg;
+            let the_id = constructInfoBar(socket.id);
+            let linkhtml = constructLinkHtml(the_id);
+
+            let the_idLink = "<a href= 'https://www.google.com' target='_blank'>google</a>"
+
+
+            msg = the_idLink + "<br>" + msg;
 
             let timeStored = new Date().getTime();
             let expiry = 0;
@@ -115,7 +120,7 @@ app.get('/', (req, res) => {
             let author2 = invUsersObj[clientId];
 
 
-            let doc= {author1:author1,author2:author2,
+            let doc= {_id:the_id,author1:author1,author2:author2,
                 timeStored:timeStored,expiry:0,contentType:contentType,content:msg};
 
 
@@ -177,6 +182,14 @@ app.get('/', (req, res) => {
             //console.log(socket.id);
         });
     });//client data
+
+    function constructLinkHtml(id){
+        //let s1 = <a href=;
+        let s2 = "dummy"
+
+
+
+    }
 
     function addUserToUserObj(msg) {
 
