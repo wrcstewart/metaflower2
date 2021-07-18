@@ -67,6 +67,8 @@ app.get('/', (req, res) => {
 
     })
 
+    app.get('/pieces/:id'), (req,res)=>
+
     let usersObj = {};
     let invUsersObj = {};
     let testUser = "user1";
@@ -104,9 +106,11 @@ app.get('/', (req, res) => {
             // do all the database stuff here
 
             let the_id = constructInfoBar(socket.id);
-            let linkhtml = constructLinkHtml(the_id);
+            let linkHtml = constructLinkHtml(the_id);
 
-            let the_idLink = "<a href= 'https://www.google.com' target='_blank'>google</a>"
+
+            //let the_idLink = "<a href= 'https://www.google.com' target='_blank'>google</a>"
+             let the_idLink = linkHtml;
 
 
             msg = the_idLink + "<br>" + msg;
@@ -184,11 +188,10 @@ app.get('/', (req, res) => {
     });//client data
 
     function constructLinkHtml(id){
-        //let s1 = <a href=;
-        let s2 = "dummy"
 
-
-
+        let lk = "<a href= 'localhost:3000/pieces/" +id+"'"+ " target='_blank'>test</a>";
+        console.log(lk);
+        return(lk);
     }
 
     function addUserToUserObj(msg) {
