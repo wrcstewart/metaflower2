@@ -67,7 +67,19 @@ app.get('/', (req, res) => {
 
     })
 
-    app.get('/pieces/:id'), (req,res)=>
+    app.get('/pieces/:id', async (req,res)=> {
+
+
+        console.log( req.params);
+        let result1 = await globaldb2.collection('Petals').findOne({ "_id": req.params.id });
+
+                  res.end(result1.content);
+                });
+
+
+
+
+
 
     let usersObj = {};
     let invUsersObj = {};
@@ -142,7 +154,7 @@ app.get('/', (req, res) => {
             //io.emit('chat message', msg);
             //console.log(msg);
             //console.log(socket.id);
-            console.log(constructInfoBar(socket.id))
+            //console.log(constructInfoBar(socket.id))
 
 
         });
