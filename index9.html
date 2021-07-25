@@ -192,34 +192,37 @@
             gEl("outer").style.overflow = "scroll";
         }
 
+        // initialise summernote editor
+        {
+            $('#summernote').summernote({
 
-        $('#summernote').summernote({
+                placeholder: 'Please type your chat message here',
+                airMode: false,
+                backColor: "#F7F1FF",
+                height: 195,
 
-            placeholder:'Please type your chat message here',
-            airMode: false,
-            backColor: "#F7F1FF",
-            height:195,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link']],
 
-            toolbar: [
-          ['style', ['style']],
-          ['font', ['bold', 'underline', 'clear']],
-          ['color', ['color']],
-          ['para', ['ul', 'ol', 'paragraph']],
-                ['insert', ['link']],
+                ],
 
-        ],
+                callbacks: {
+                    onKeydown: function (e) {
+                        logKey1(e)
 
-            callbacks: {
-                onKeydown: function (e) {
-                    logKey1(e)
-
+                    }
                 }
-            }
-        });
+            });
 
-
+        }
 
     requestSystemMsgToSelf("explain panes");
+
+
     }//end setUpPage ------------------------------------------------------------------------------------------------------
 
     function logKey1(e) {
@@ -231,84 +234,92 @@
 
     socket.on('chat message', function (msg) {
 
-        if(msg.status === "publish"){
-            let publicList = gEl("publicListID");
-        let pubItems = publicList.getElementsByTagName("li");
-        let lenPubList = pubItems.length;
-        let newPubIDNumber = lenPubList + 1;
-        let newPubID = "pubListItemID" + newPubIDNumber;
+        // case where the message is a public one
+        {
+            if (msg.status === "publish") {
+                let publicList = gEl("publicListID");
+                let pubItems = publicList.getElementsByTagName("li");
+                let lenPubList = pubItems.length;
+                let newPubIDNumber = lenPubList + 1;
+                let newPubID = "pubListItemID" + newPubIDNumber;
 
-         let aPubListEl = document.createElement('li');
-            aPubListEl.id = newPubID;
+                let aPubListEl = document.createElement('li');
+                aPubListEl.id = newPubID;
 
-            //need to deselct old selected.
+                //need to style old id as not selected.
 
-              if (window.selectedPubListId) {
-                let oldPubListEl = gEl(window.selectedPubListId);
-                oldPubListEl.setAttribute("selected", "false");
-                setListElementStyle(oldPubListEl);
+                if (window.selectedPubListId) {
+                    let oldPubListEl = gEl(window.selectedPubListId);
+                    oldPubListEl.setAttribute("selected", "false");
+                    setListElementStyle(oldPubListEl);
+                }
+
+                // now update our global with the id of the new item
+                window.selectedPubListId = newPubID;
+                // and set up the new list element
+                aPubListEl.setAttribute("selected", 'true');
+                aPubListEl.setAttribute("status", 'published');
+                aPubListEl.addEventListener('dblclick', pubListClick);
+
+
+                publicList.insertBefore(aPubListEl, publicList.childNodes[0]);
+
+                aPubListEl.innerHTML = msg.message;
+
+                setListElementStyle(aPubListEl);
             }
-
-            // now update our global with the id of the new item
-            window.selectedPubListId = newPubID;
-            aPubListEl.setAttribute("selected", 'true');
-             aPubListEl.setAttribute("status", 'published');
-            aPubListEl.addEventListener('dblclick', pubListClick);
-
-            //aPubListEl.innerHTML ="test";
-            publicList.insertBefore(aPubListEl, publicList.childNodes[0]);
-
-            aPubListEl.innerHTML = msg.message;
-
-            setListElementStyle(aPubListEl);
         }
-    // if for private list
-        if(msg.status !== "publish") {
+        // case where message is private
+        {
+            if (msg.status !== "publish") {
 
-            let privateList = gEl("privateListID");
-            let items = privateList.getElementsByTagName("li");
-            let lenList = items.length;
-            let newIDNumber = lenList + 1;
-            let newID = "listItemID" + newIDNumber;
+                let privateList = gEl("privateListID");
+                let items = privateList.getElementsByTagName("li");
+                let lenList = items.length;
+                let newIDNumber = lenList + 1;
+                let newID = "listItemID" + newIDNumber;
 
 
 // we will make the new list item selected but first, deselect the previous selected item
-            if (window.selectedListId) {
-                let oldListEl = gEl(window.selectedListId);
-                oldListEl.setAttribute("selected", "false");
-                setListElementStyle(oldListEl);
-            }
-            // now update our global with the id of the new item
-            window.selectedListId = newID;
-// now actually create the new item and set its attributes
-            let aListEl = document.createElement('li');
-            aListEl.id = newID;
-            aListEl.setAttribute('user', msg.user);
-            aListEl.setAttribute('status', msg.status);
-            aListEl.setAttribute('selected', 'false');
-            aListEl.innerHTML = msg.message;// show(msg.status);
-            aListEl.addEventListener('dblclick', listClick);
-
-
-            privateList.insertBefore(aListEl, privateList.childNodes[0]);
-
-
-            if (msg.status === 'suggested') {
-                aListEl.setAttribute("status", "suggested");
-                //in this version only one item can be marked as suggested for publication at any one time so
-                if (window.suggestedId) {//set any previous suggestion to not suggested ie status: 'temp'
-                    gEl(window.suggestedId).setAttribute('status', 'temp)')
-                    setListElementStyle(gEl(window.suggestedId));
+                if (window.selectedListId) {
+                    let oldListEl = gEl(window.selectedListId);
+                    oldListEl.setAttribute("selected", "false");
+                    setListElementStyle(oldListEl);
                 }
-                window.suggestedId = aListEl.id;
-            }
+                // now update our global with the id of the new item
+                window.selectedListId = newID;
+// now actually create the new item and set its attributes
+                let aListEl = document.createElement('li');
+                aListEl.id = newID;
+                aListEl.setAttribute('user', msg.user);
+                aListEl.setAttribute('status', msg.status);
+                aListEl.setAttribute('selected', 'false');
+                aListEl.innerHTML = msg.message;// show(msg.status);
+                aListEl.addEventListener('dblclick', listClick);
 
-            aListEl.setAttribute("selected", 'true');
-            setButtonsFrom(aListEl);
-            setListElementStyle(aListEl);
+
+                privateList.insertBefore(aListEl, privateList.childNodes[0]);
+
+
+                if (msg.status === 'suggested') {
+                    aListEl.setAttribute("status", "suggested");
+                    //in this version only one item can be marked as suggested for publication at any one time so
+                    if (window.suggestedId) {//set any previous suggestion to not suggested ie status: 'temp'
+                        gEl(window.suggestedId).setAttribute('status', 'temp)')
+                        setListElementStyle(gEl(window.suggestedId));
+                    }
+                    window.suggestedId = aListEl.id;
+                }
+
+                aListEl.setAttribute("selected", 'true');
+                setButtonsFrom(aListEl);
+                setListElementStyle(aListEl);
+            }
         }
 
-    });//end socket on chat message -------------------------------------------------------------------------------
+    });
+
+
 
     socket.on('pubupdateresponse', function(response){
 
@@ -318,11 +329,9 @@
         // find the pub list and delete all child list nodes.
         let liC = gEl("publicListID");//whoops
        updateList(liC,response.responsearray);
-
-
-
     });
 
+    //update the public list
     function updateList(lEl,htmlArray) {
         show('entering');
         removeListElements(lEl);
@@ -357,7 +366,7 @@
         }
     }
 
-// next adjust pubListClick
+// user clicks a public list entry to select it
     function pubListClick(e) {
         //if the user doubles clicks a list item  make it selected.
 
@@ -386,8 +395,9 @@
         gEl("test").innerHTML = testStuff + "<br>" + socket.id;
 // end of debug/devel stuff
 
-    }//end pub list click --------------------------------------------------------------------------------------------
+    }
 
+//if user clicks a private list entry
      function listClick(e) {
         //if the user doubles clicks a list item  make it selected.
 
@@ -416,7 +426,7 @@
         gEl("test").innerHTML = testStuff + "<br>" + socket.id;
 // end of debug/devel stuff
 
-    }//end pubList click ----------------------
+    }
 
 function doCopyFromPubList(){
 
