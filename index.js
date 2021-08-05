@@ -201,7 +201,7 @@ app.get('/', (req, res) => {
 
     function constructLinkHtml(id){
 
-        let lk = "<a href= 'localhost:3000/pieces/" +id+"'"+ " target='_blank'>test</a>";
+        let lk = "<a href= 'http://localhost:3000/pieces/" +id+"'"+ " target='_blank'>test</a>";
         console.log(lk);
         return(lk);
     }
