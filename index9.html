@@ -464,11 +464,9 @@ function doCopyFromPubList(){
 
     function doRequestPubListUpdate (){
 
-        let pubListQueryObj = {nRecs:90};
+        let pubListQueryObj = {nRecs:90}; // not actually using yet
         socket.emit('publistupdate',pubListQueryObj);
-
     }
-
 
 
     function requestSystemMsgToSelf(msgCode) {
@@ -536,18 +534,11 @@ function doCopyFromPubList(){
             let itemToPublish = gEl( window.selectedListId);
             let msg = itemToPublish.innerHTML;
             socket.emit('publish',msg); //send to Mongo
-
-
-
-
-
-            //
-
-
-
-
+            itemToPublish.setAttribute("status","published");
+            setListElementStyle(itemToPublish);
 
         } else {
+
             return
         }
     }
@@ -557,17 +548,20 @@ function removeListElements(listContainerEl){
         listContainerEl.removeChild(listContainerEl.firstChild);
     }
 }
+
+
     function setListElementStyle(liEl) {
 
-        let user = liEl.getAttribute("user");
-        let status = liEl.getAttribute("status")
-        let selected = liEl.getAttribute("selected");
+        let user = liEl.getAttribute("user"); // either self or buddy
+        let status = liEl.getAttribute("status") // either temp or suggested or published or help
+        let selected = liEl.getAttribute("selected"); // either true or false
+
         let publishButStyleEnabledColor = "rgb(256,215,0)";
         let publishButStyleDisabledColor = "rgb(200,200,200)"
 
         show("within setListElement with user:" + user + " status:" + status + " selected:" + selected);
 
-        let backgroundSelf = "#FBF8FE"; //     //"rgb(160,240,255)";
+        let backgroundSelf = "#FBF8FE";
         let backgroundBuddy = "#FBFEF8";
         let backgroundHelp = "#FCE4E4";
         let backgroundPublished = "#F8FEFE";
@@ -579,28 +573,37 @@ function removeListElements(listContainerEl){
         if (status === 'published') liEl.style.backgroundColor = backgroundPublished;
 
         let borderStyleSelectedTrue = "solid";
-        let borderStyleSelectedFalse = "dotted";
+        let borderStyleSelectedFalse = "solid";//decided i wasn't too keen on dotted!
+
+         liEl.style.borderWidth = "2px";
+        liEl.style.borderStyle = borderStyleSelectedTrue;
 
         if (selected === "true") {
-            liEl.style.borderStyle = borderStyleSelectedTrue
+            liEl.style.borderWidth = "3px";
         } else {
-            liEl.style.borderStyle = borderStyleSelectedFalse;
+            liEl.style.borderWidth = "1px";
         }
-
+/*
         let tempBorderWidth = "1px";
-        let suggestedBorderWidth = "2px";
-        let publishedBorderWidth = "2px";
-        let helpBorderWidth = "1px";
+        let suggestedBorderWidth = "1px";
+        let publishedBorderWidth = "1px";
+        let helpBorderWidth = "3px";
 
         if (status === "temp") liEl.style.borderWidth = tempBorderWidth;
         if (status === "suggested") liEl.style.borderWidth = suggestedBorderWidth;
         if (status === "published") liEl.style.borderWidth = publishedBorderWidth;
         if (status === "help") liEl.style.borderWidth = helpBorderWidth;
+*/
 
-        liEl.style.borderColor = "rgb(128,128,128)";
+        liEl.style.borderColor = "rgb(210,210,210)";
+
+        if (status === "suggested") liEl.style.borderColor = "rgb(256,215,0)";
+         if (status === "published") liEl.style.borderColor = "rgb(200,240,200)";
     }
 
-    //---------------------------------------------------------
+
+
+    //-----------------------------------------------------------------------------------------------------------
     //utility functions
     function show(aString) {
         document.getElementById("test").innerHTML = document.getElementById("test").innerHTML + aString + "<br>";
@@ -616,7 +619,7 @@ function removeListElements(listContainerEl){
         // uses the attributes of the latest listElement to set the state of the system buttons.
 
 
-        let publishButStyleEnabledColor = "rgb(128,128,128)";
+        let publishButStyleEnabledColor = "rgb(256,215,0)";
         let publishButStyleDisabledColor = "rgb(200,200,200)"
 
 
