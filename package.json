@@ -12,5 +12,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^4.0.2"
+  },
+  "devDependencies": {
+    "mongodb": "^4.2.1"
   }
 }
